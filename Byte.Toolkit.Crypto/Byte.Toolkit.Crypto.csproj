@@ -10,7 +10,7 @@
     <Company />
     <Copyright>Copyright © 2021 Josué Clément</Copyright>
     <PackageProjectUrl>https://github.com/mod6991/Byte.Toolkit.Crypto</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/mod6991/Byte.Toolkit.Crypto</RepositoryUrl>
+    <RepositoryUrl>https://github.com/mod6991/Byte.Toolkit.Crypto.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
