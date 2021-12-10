@@ -1,4 +1,4 @@
-﻿using System;
+﻿//Copied from https://github.com/bcgit/bc-csharp/blob/master/crypto/src/security/DotNetUtilities.cs
 using System.Security.Cryptography;
 using SystemX509 = System.Security.Cryptography.X509Certificates;
 
