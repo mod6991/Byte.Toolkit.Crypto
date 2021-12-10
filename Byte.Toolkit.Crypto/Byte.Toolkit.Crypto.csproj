@@ -21,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Hash\" />
     <Folder Include="KDF\" />
     <Folder Include="FileEnc\" />
     <Folder Include="Random\" />
