@@ -46,8 +46,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
 
             byte[] encKeysData = PubKey.RSA.Encrypt(rsa, keysData);
 
-            BinaryHelper.WriteString(output, "ENCR!", Encoding.ASCII);
-            BinaryHelper.WriteByte(output, _version);
+            BinaryHelper.Write(output, "ENCR!", Encoding.ASCII);
+            BinaryHelper.Write(output, _version);
             BinaryHelper.WriteLV(output, Encoding.ASCII.GetBytes(keyName));
             BinaryHelper.WriteLV(output, encKeysData);
 
@@ -119,12 +119,12 @@ namespace Byte.Toolkit.Crypto.FileEnc
             byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt);
             byte[] iv = RandomHelper.GenerateBytes(AES.IV_SIZE);
 
-            BinaryHelper.WriteString(output, "ENCP!", Encoding.ASCII);
-            BinaryHelper.WriteByte(output, _version);
-            BinaryHelper.WriteByte(output, (byte)iv.Length);
-            BinaryHelper.WriteByte(output, (byte)salt.Length);
-            BinaryHelper.WriteBytes(output, iv);
-            BinaryHelper.WriteBytes(output, salt);
+            BinaryHelper.Write(output, "ENCP!", Encoding.ASCII);
+            BinaryHelper.Write(output, _version);
+            BinaryHelper.Write(output, (byte)iv.Length);
+            BinaryHelper.Write(output, (byte)salt.Length);
+            BinaryHelper.Write(output, iv);
+            BinaryHelper.Write(output, salt);
 
             AES.EncryptCBC(input, output, key, iv, _paddingStyle, notifyProgression);
         }

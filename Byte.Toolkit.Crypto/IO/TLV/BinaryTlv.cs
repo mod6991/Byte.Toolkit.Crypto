@@ -33,7 +33,7 @@ namespace Byte.Toolkit.Crypto.IO.TLV
             _tagLength = tagLength;
             _tags = new List<string>();
 
-            BinaryHelper.WriteByte(_output, _tagLength);
+            BinaryHelper.Write(_output, _tagLength);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Byte.Toolkit.Crypto.IO.TLV
             if (padTag.Length != _tagLength)
                 throw new TlvException("Invalid tag length");
 
-            BinaryHelper.WriteString(_output, padTag, Encoding.ASCII);
+            BinaryHelper.Write(_output, padTag, Encoding.ASCII);
             BinaryHelper.WriteLV(_output, value);
         }
 
