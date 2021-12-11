@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Crypto.Engines;
+﻿using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Byte.Toolkit.Crypto.SymKey
@@ -20,7 +21,7 @@ namespace Byte.Toolkit.Crypto.SymKey
             byte[] enc = new byte[data.Length];
 
             Salsa20Engine engine = new Salsa20Engine();
-            ParametersWithIV parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
+            ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
             engine.Init(true, parameters);
             engine.ProcessBytes(data, 0, data.Length, enc, 0);
 
@@ -39,7 +40,7 @@ namespace Byte.Toolkit.Crypto.SymKey
         public static void Encrypt(Stream input, Stream output, byte[] key, byte[] nonce, Action<int> notifyProgression = null, int bufferSize = 4096)
         {
             Salsa20Engine engine = new Salsa20Engine();
-            ParametersWithIV parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
+            ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
             engine.Init(true, parameters);
 
             int bytesRead;
@@ -72,7 +73,7 @@ namespace Byte.Toolkit.Crypto.SymKey
             byte[] dec = new byte[data.Length];
 
             Salsa20Engine engine = new Salsa20Engine();
-            ParametersWithIV parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
+            ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
             engine.Init(false, parameters);
             engine.ProcessBytes(data, 0, data.Length, dec, 0);
 
@@ -91,7 +92,7 @@ namespace Byte.Toolkit.Crypto.SymKey
         public static void Decrypt(Stream input, Stream output, byte[] key, byte[] nonce, Action<int> notifyProgression = null, int bufferSize = 4096)
         {
             Salsa20Engine engine = new Salsa20Engine();
-            ParametersWithIV parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
+            ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
             engine.Init(false, parameters);
 
             int bytesRead;
