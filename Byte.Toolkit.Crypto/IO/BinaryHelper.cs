@@ -9,7 +9,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">Byte value</param>
-        public static void WriteByte(Stream stream, byte value)
+        public static void Write(Stream stream, byte value)
         {
             stream.Write(new byte[] { value }, 0, 1);
         }
@@ -19,7 +19,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">Bytes value</param>
-        public static void WriteBytes(Stream stream, byte[] value)
+        public static void Write(Stream stream, byte[] value)
         {
             stream.Write(value, 0, value.Length);
         }
@@ -29,7 +29,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">Bool value</param>
-        public static void WriteBool(Stream stream, bool value)
+        public static void Write(Stream stream, bool value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 1);
@@ -40,7 +40,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">Int16 value</param>
-        public static void WriteInt16(Stream stream, Int16 value)
+        public static void Write(Stream stream, Int16 value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 2);
@@ -51,7 +51,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">UInt16 value</param>
-        public static void WriteUInt16(Stream stream, UInt16 value)
+        public static void Write(Stream stream, UInt16 value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 2);
@@ -62,7 +62,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">Int32 value</param>
-        public static void WriteInt32(Stream stream, Int32 value)
+        public static void Write(Stream stream, Int32 value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 4);
@@ -73,7 +73,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">UInt32 value</param>
-        public static void WriteUInt32(Stream stream, UInt32 value)
+        public static void Write(Stream stream, UInt32 value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 4);
@@ -84,7 +84,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">Int64 value</param>
-        public static void WriteInt64(Stream stream, Int64 value)
+        public static void Write(Stream stream, Int64 value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 8);
@@ -95,7 +95,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">UInt64 value</param>
-        public static void WriteUInt64(Stream stream, UInt64 value)
+        public static void Write(Stream stream, UInt64 value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 8);
@@ -106,7 +106,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">float value</param>
-        public static void WriteFloat(Stream stream, float value)
+        public static void Write(Stream stream, float value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 4);
@@ -117,7 +117,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// </summary>
         /// <param name="stream">Output stream</param>
         /// <param name="value">double value</param>
-        public static void WriteDouble(Stream stream, double value)
+        public static void Write(Stream stream, double value)
         {
             byte[] data = BitConverter.GetBytes(value);
             stream.Write(data, 0, 8);
@@ -129,7 +129,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// <param name="stream">Output stream</param>
         /// <param name="value">String value</param>
         /// <param name="encoding">String encoding</param>
-        public static void WriteString(Stream stream, string value, Encoding encoding)
+        public static void Write(Stream stream, string value, Encoding encoding)
         {
             byte[] data = encoding.GetBytes(value);
             stream.Write(data, 0, data.Length);
@@ -142,8 +142,8 @@ namespace Byte.Toolkit.Crypto.IO
         /// <param name="value">Value</param>
         public static void WriteLV(Stream stream, byte[] value)
         {
-            WriteInt32(stream, value.Length);
-            WriteBytes(stream, value);
+            Write(stream, value.Length);
+            Write(stream, value);
         }
 
         /// <summary>
