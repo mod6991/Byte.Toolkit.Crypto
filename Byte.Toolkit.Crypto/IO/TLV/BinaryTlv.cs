@@ -1,7 +1,5 @@
 ﻿using System.Text;
 
-#pragma warning disable CS8603
-
 namespace Byte.Toolkit.Crypto.IO.TLV
 {
     public sealed class TlvException : Exception
