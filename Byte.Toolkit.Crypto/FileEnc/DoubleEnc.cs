@@ -1,15 +1,10 @@
 ﻿using Byte.Toolkit.Crypto.IO;
 using Byte.Toolkit.Crypto.KDF;
 using Byte.Toolkit.Crypto.Padding;
-using Byte.Toolkit.Crypto.PubKey;
 using Byte.Toolkit.Crypto.Random;
 using Byte.Toolkit.Crypto.SymKey;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Byte.Toolkit.Crypto.FileEnc
 {
@@ -17,7 +12,6 @@ namespace Byte.Toolkit.Crypto.FileEnc
     {
         private const byte _version = 0x04;
         private const int _bufferSize = 4096;
-        private const PaddingStyle _paddingStyle = PaddingStyle.Pkcs7;
 
         /// <summary>
         /// Encrypt with RSA key
@@ -29,6 +23,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
         /// <param name="notifyProgression">Notify progression method</param>
         public static void EncryptWithKey(Stream input, Stream output, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
         {
+            IDataPadding padding = new Pkcs7Padding();
+
             byte[] key1 = RandomHelper.GenerateBytes(ChaCha20Rfc7539.KEY_SIZE);
             byte[] iv1 = RandomHelper.GenerateBytes(ChaCha20Rfc7539.NONCE_SIZE);
             byte[] key2 = RandomHelper.GenerateBytes(AES.KEY_SIZE);
@@ -69,7 +65,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
                     {
                         byte[] smallBuffer = new byte[bytesRead];
                         Array.Copy(buffer, 0, smallBuffer, 0, bytesRead);
-                        byte[] padData = Padding.Padding.Pad(smallBuffer, AES.BLOCK_SIZE, _paddingStyle);
+                        byte[] padData = padding.Pad(smallBuffer, AES.BLOCK_SIZE);
                         padDone = true;
 
                         XorEncryptAndWrite(output, padData.Length, padData, key1, iv1, key2, iv2);
@@ -83,7 +79,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
             if (!padDone)
             {
                 buffer = new byte[0];
-                byte[] padData = Padding.Padding.Pad(buffer, AES.BLOCK_SIZE, _paddingStyle);
+                byte[] padData = padding.Pad(buffer, AES.BLOCK_SIZE);
 
                 XorEncryptAndWrite(output, AES.BLOCK_SIZE, padData, key1, iv1, key2, iv2);
             }
@@ -115,6 +111,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
         /// <param name="notifyProgression">Notify progression method</param>
         public static void EncryptWithPassword(Stream input, Stream output, string password, Action<int> notifyProgression = null)
         {
+            IDataPadding padding = new Pkcs7Padding();
+
             byte[] salt = RandomHelper.GenerateBytes(16);
             byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt);
             byte[] iv = RandomHelper.GenerateBytes(AES.IV_SIZE);
@@ -126,7 +124,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
             BinaryHelper.Write(output, iv);
             BinaryHelper.Write(output, salt);
 
-            AES.EncryptCBC(input, output, key, iv, _paddingStyle, notifyProgression);
+            AES.EncryptCBC(input, output, key, iv, padding, notifyProgression);
         }
 
         /// <summary>
@@ -138,6 +136,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
         /// <param name="notifyProgression">Notify progression method</param>
         public static void DecryptWithKey(Stream input, Stream output, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
         {
+            IDataPadding padding = new Pkcs7Padding();
+
             input.Seek(5, SeekOrigin.Current); // Header
             input.Seek(1, SeekOrigin.Current); // Version
 
@@ -185,7 +185,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
                 else
                 {
-                    byte[] unpadData = Padding.Padding.Unpad(backup, AES.BLOCK_SIZE, _paddingStyle);
+                    byte[] unpadData = padding.UnPad(backup, AES.BLOCK_SIZE);
                     output.Write(unpadData, 0, unpadData.Length);
                 }
 
@@ -201,6 +201,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
         /// <param name="notifyProgression">Notify progression method</param>
         public static void DecryptWithPassword(Stream input, Stream output, string password, Action<int> notifyProgression = null)
         {
+            IDataPadding padding = new Pkcs7Padding();
+
             input.Seek(5, SeekOrigin.Current); // Header
             input.Seek(1, SeekOrigin.Current); // Version
 
@@ -214,7 +216,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
 
             byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt);
 
-            AES.DecryptCBC(input, output, key, iv, _paddingStyle, notifyProgression);
+            AES.DecryptCBC(input, output, key, iv, padding, notifyProgression);
         }
     }
 }

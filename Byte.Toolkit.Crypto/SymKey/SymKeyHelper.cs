@@ -3,7 +3,7 @@ using Org.BouncyCastle.Crypto;
 
 namespace Byte.Toolkit.Crypto.SymKey
 {
-    internal static class PaddingHelper
+    internal static class SymKeyHelper
     {
         /// <summary>
         /// Encrypt stream with cipher in CBC mode
@@ -12,11 +12,11 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="output">Output stream</param>
         /// <param name="cipher">Cipher</param>
         /// <param name="blockSize">Block size</param>
-        /// <param name="paddingStyle">Padding style</param>
+        /// <param name="padding">Padding</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
         public static void EncryptCBC(Stream input, Stream output, IBufferedCipher cipher, int blockSize,
-                                      PaddingStyle paddingStyle, Action<int> notifyProgression, int bufferSize)
+                                      IDataPadding padding, Action<int> notifyProgression, int bufferSize)
         {
             bool padDone = false;
             int bytesRead;
@@ -36,7 +36,7 @@ namespace Byte.Toolkit.Crypto.SymKey
                 {
                     byte[] smallBuffer = new byte[bytesRead];
                     Array.Copy(buffer, 0, smallBuffer, 0, bytesRead);
-                    byte[] padData = Padding.Padding.Pad(smallBuffer, blockSize, paddingStyle);
+                    byte[] padData = padding.Pad(smallBuffer, blockSize);
                     cipher.ProcessBytes(padData, enc, 0);
                     output.Write(enc, 0, padData.Length);
                     padDone = true;
@@ -49,7 +49,7 @@ namespace Byte.Toolkit.Crypto.SymKey
             if (!padDone)
             {
                 buffer = new byte[0];
-                byte[] padData = Padding.Padding.Pad(buffer, blockSize, paddingStyle);
+                byte[] padData = padding.Pad(buffer, blockSize);
                 cipher.ProcessBytes(padData, enc, 0);
                 output.Write(enc, 0, padData.Length);
             }
@@ -62,11 +62,11 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="output">Output stream</param>
         /// <param name="cipher">Cipher</param>
         /// <param name="blockSize">Block size</param>
-        /// <param name="paddingStyle">Padding style</param>
+        /// <param name="padding">Padding</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
         public static void DecryptCBC(Stream input, Stream output, IBufferedCipher cipher, int blockSize,
-                                      PaddingStyle paddingStyle, Action<int> notifyProgression, int bufferSize)
+                                      IDataPadding padding, Action<int> notifyProgression, int bufferSize)
         {
             byte[] backup = null;
             int bytesRead;
@@ -97,7 +97,7 @@ namespace Byte.Toolkit.Crypto.SymKey
                         byte[] smallBuffer = new byte[bytesRead];
                         Array.Copy(buffer, 0, smallBuffer, 0, bytesRead);
                         cipher.ProcessBytes(smallBuffer, dec, 0);
-                        byte[] unpadData = Padding.Padding.Unpad(dec, blockSize, paddingStyle);
+                        byte[] unpadData = padding.UnPad(dec, blockSize);
                         output.Write(unpadData, 0, unpadData.Length);
                     }
 
@@ -108,7 +108,7 @@ namespace Byte.Toolkit.Crypto.SymKey
                 {
                     if (backup != null)
                     {
-                        byte[] unpadData = Padding.Padding.Unpad(backup, blockSize, paddingStyle);
+                        byte[] unpadData = padding.UnPad(backup, blockSize);
                         output.Write(unpadData, 0, unpadData.Length);
                     }
                 }

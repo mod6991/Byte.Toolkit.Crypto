@@ -38,15 +38,15 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="output">Output stream</param>
         /// <param name="key">Key</param>
         /// <param name="iv">IV</param>
-        /// <param name="paddingStyle">Padding</param>
+        /// <param name="padding">Padding</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
-        public static void EncryptCBC(Stream input, Stream output, byte[] key, byte[] iv, PaddingStyle paddingStyle = PaddingStyle.Pkcs7, Action<int> notifyProgression = null, int bufferSize = 4096)
+        public static void EncryptCBC(Stream input, Stream output, byte[] key, byte[] iv, IDataPadding padding, Action<int> notifyProgression = null, int bufferSize = 4096)
         {
             IBufferedCipher cipher = new BufferedBlockCipher(new CbcBlockCipher(new DesEngine()));
             ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), iv, 0, iv.Length);
             cipher.Init(true, parameters);
-            PaddingHelper.EncryptCBC(input, output, cipher, BLOCK_SIZE, paddingStyle, notifyProgression, bufferSize);
+            SymKeyHelper.EncryptCBC(input, output, cipher, BLOCK_SIZE, padding, notifyProgression, bufferSize);
         }
 
         /// <summary>
@@ -75,15 +75,15 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="output">Output stream</param>
         /// <param name="key">Key</param>
         /// <param name="iv">IV</param>
-        /// <param name="paddingStyle">Padding</param>
+        /// <param name="padding">Padding</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
-        public static void DecryptCBC(Stream input, Stream output, byte[] key, byte[] iv, PaddingStyle paddingStyle = PaddingStyle.Pkcs7, Action<int> notifyProgression = null, int bufferSize = 4096)
+        public static void DecryptCBC(Stream input, Stream output, byte[] key, byte[] iv, IDataPadding padding, Action<int> notifyProgression = null, int bufferSize = 4096)
         {
             IBufferedCipher cipher = new BufferedBlockCipher(new CbcBlockCipher(new DesEngine()));
             ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), iv, 0, iv.Length);
             cipher.Init(false, parameters);
-            PaddingHelper.DecryptCBC(input, output, cipher, BLOCK_SIZE, paddingStyle, notifyProgression, bufferSize);
+            SymKeyHelper.DecryptCBC(input, output, cipher, BLOCK_SIZE, padding, notifyProgression, bufferSize);
         }
     }
 }
