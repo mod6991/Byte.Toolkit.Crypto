@@ -45,9 +45,9 @@ namespace Byte.Toolkit.Crypto.PubKey
         #region Save / Load PEM files
 
         /// <summary>
-        ///Load a RSA key from a PEM file 
+        /// Load a PEM from stream 
         /// </summary>
-        /// <param name="file">PEM file</param>
+        /// <param name="input">Input stream</param>
         /// <param name="password">Password</param>
         public static RSACryptoServiceProvider LoadFromPEM(Stream input, string password = null)
         {
@@ -86,10 +86,23 @@ namespace Byte.Toolkit.Crypto.PubKey
         }
 
         /// <summary>
-        /// Save a public RSA key to a PEM file
+        /// Load a PEM file
+        /// </summary>
+        /// <param name="filePath">PEM file path</param>
+        /// <param name="password">Password</param>
+        public static RSACryptoServiceProvider LoadFromPEM(string filePath, string password = null)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                return LoadFromPEM(fs, password);
+            }
+        }
+
+        /// <summary>
+        /// Save a public RSA key to a PEM stream
         /// </summary>
         /// <param name="rsa">Public key</param>
-        /// <param name="file">PEM file</param>
+        /// <param name="output">Output stream</param>
         public static void SavePublicKeyToPEM(RSACryptoServiceProvider rsa, Stream output)
         {
             using (StreamWriter sw = new StreamWriter(output, Encoding.Default))
@@ -101,10 +114,23 @@ namespace Byte.Toolkit.Crypto.PubKey
         }
 
         /// <summary>
-        /// Save an encrypted private RSA key to a PEM file
+        /// Save a public RSA key to a PEM file
+        /// </summary>
+        /// <param name="rsa">Public key</param>
+        /// <param name="outputFile">PEM output file</param>
+        public static void SavePublicKeyToPEM(RSACryptoServiceProvider rsa, string outputFile)
+        {
+            using (FileStream fs = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
+            {
+                SavePublicKeyToPEM(rsa, fs);
+            }
+        }
+
+        /// <summary>
+        /// Save an encrypted private RSA key to a PEM stream
         /// </summary>
         /// <param name="rsa">Private key</param>
-        /// <param name="file">PEM file</param>
+        /// <param name="output">Output stream</param>
         /// <param name="password">Password</param>
         /// <param name="algorithm">Algorithm for PEM encryption</param>
         public static void SavePrivateKeyToPEM(RSACryptoServiceProvider rsa, Stream output, string password, string algorithm = "AES-256-CBC")
@@ -119,10 +145,25 @@ namespace Byte.Toolkit.Crypto.PubKey
         }
 
         /// <summary>
+        /// Save an encrypted RSA key to a PEM file
+        /// </summary>
+        /// <param name="rsa">Private key</param>
+        /// <param name="outputFile">PEM output file</param>
+        /// <param name="password">Password</param>
+        /// <param name="algorithm">Algorithm</param>
+        public static void SavePrivateKeyToPEM(RSACryptoServiceProvider rsa, string outputFile, string password, string algorithm = "AES-256-CBC")
+        {
+            using (FileStream fs = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
+            {
+                SavePrivateKeyToPEM(rsa, fs, password, algorithm);
+            }
+        }
+
+        /// <summary>
         /// Save a private RSA key to a PEM file
         /// </summary>
         /// <param name="rsa">Private key</param>
-        /// <param name="file">PEM file</param>
+        /// <param name="output">Output stream</param>
         public static void SavePrivateKeyToPEM(RSACryptoServiceProvider rsa, Stream output)
         {
             using (StreamWriter sw = new StreamWriter(output, Encoding.Default))
@@ -131,6 +172,14 @@ namespace Byte.Toolkit.Crypto.PubKey
                 AsymmetricCipherKeyPair ackp = DotNetUtilities.GetRsaKeyPair(rsa);
                 RsaPrivateCrtKeyParameters privKey = (RsaPrivateCrtKeyParameters)ackp.Private;
                 pemWriter.WriteObject(privKey);
+            }
+        }
+
+        public static void SavePrivateKeyToPEM(RSACryptoServiceProvider rsa, string outputFile)
+        {
+            using (FileStream fs = new FileStream(outputFile, FileMode.Create, FileAccess.Write))
+            {
+                SavePrivateKeyToPEM(rsa, fs);
             }
         }
 
