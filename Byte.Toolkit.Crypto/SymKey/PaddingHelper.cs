@@ -15,13 +15,8 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="paddingStyle">Padding style</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
-        public static void EncryptCBC(Stream input,
-                                      Stream output,
-                                      IBufferedCipher cipher,
-                                      int blockSize,
-                                      PaddingStyle paddingStyle,
-                                      Action<int> notifyProgression,
-                                      int bufferSize)
+        public static void EncryptCBC(Stream input, Stream output, IBufferedCipher cipher, int blockSize,
+                                      PaddingStyle paddingStyle, Action<int> notifyProgression, int bufferSize)
         {
             bool padDone = false;
             int bytesRead;
@@ -70,13 +65,8 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="paddingStyle">Padding style</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
-        public static void DecryptCBC(Stream input,
-                                      Stream output,
-                                      IBufferedCipher cipher,
-                                      int blockSize,
-                                      PaddingStyle paddingStyle,
-                                      Action<int> notifyProgression,
-                                      int bufferSize)
+        public static void DecryptCBC(Stream input, Stream output, IBufferedCipher cipher, int blockSize,
+                                      PaddingStyle paddingStyle, Action<int> notifyProgression, int bufferSize)
         {
             byte[] backup = null;
             int bytesRead;
