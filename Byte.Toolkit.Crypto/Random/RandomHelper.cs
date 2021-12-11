@@ -15,6 +15,9 @@ namespace Byte.Toolkit.Crypto.Random
         /// <param name="size">Array size</param>
         public static byte[] GenerateBytes(int size)
         {
+#if NET6_0_OR_GREATER
+            return RandomNumberGenerator.GetBytes(size);
+#else
             byte[] bytes = new byte[size];
             using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
             {
@@ -22,6 +25,7 @@ namespace Byte.Toolkit.Crypto.Random
             }
 
             return bytes;
+#endif
         }
 
         /// <summary>
@@ -31,11 +35,7 @@ namespace Byte.Toolkit.Crypto.Random
         /// <param name="positiveOnly">Return positive Int16 value only</param>
         public static Int16 GenerateInt16(Int16 max = Int16.MaxValue, bool positiveOnly = true)
         {
-            byte[] bytes = new byte[sizeof(Int16)];
-            using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
-            {
-                provider.GetBytes(bytes);
-            }
+            byte[] bytes = GenerateBytes(sizeof(Int16));
 
             Int16 val = BitConverter.ToInt16(bytes, 0);
             if (positiveOnly)
@@ -51,11 +51,7 @@ namespace Byte.Toolkit.Crypto.Random
         /// <param name="positiveOnly">Return positive Int32 value only</param>
         public static Int32 GenerateInt32(Int32 max = Int32.MaxValue, bool positiveOnly = true)
         {
-            byte[] bytes = new byte[sizeof(Int32)];
-            using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
-            {
-                provider.GetBytes(bytes);
-            }
+            byte[] bytes = GenerateBytes(sizeof(Int32));
 
             Int32 val = BitConverter.ToInt32(bytes, 0);
             if (positiveOnly)
@@ -71,11 +67,7 @@ namespace Byte.Toolkit.Crypto.Random
         /// <param name="positiveOnly">Return positive Int64 value only</param>
         public static Int64 GenerateInt64(Int64 max = Int64.MaxValue, bool positiveOnly = true)
         {
-            byte[] bytes = new byte[sizeof(Int64)];
-            using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
-            {
-                provider.GetBytes(bytes);
-            }
+            byte[] bytes = GenerateBytes(sizeof(Int64));
 
             Int64 val = BitConverter.ToInt64(bytes, 0);
             if (positiveOnly)
@@ -90,11 +82,7 @@ namespace Byte.Toolkit.Crypto.Random
         /// <param name="max">Max value</param>
         public static double GenerateDouble(double max = 1)
         {
-            byte[] bytes = new byte[sizeof(Int32)];
-            using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
-            {
-                provider.GetBytes(bytes);
-            }
+            byte[] bytes = GenerateBytes(sizeof(Int32));
 
             int val = BitConverter.ToInt32(bytes, 0);
             return new System.Random(val).NextDouble() * max;
@@ -106,11 +94,7 @@ namespace Byte.Toolkit.Crypto.Random
         /// <param name="max">Max value</param>
         public static decimal GenerateDecimal(decimal max = 1)
         {
-            byte[] bytes = new byte[sizeof(Int32)];
-            using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
-            {
-                provider.GetBytes(bytes);
-            }
+            byte[] bytes = GenerateBytes(sizeof(Int32));
 
             int val = BitConverter.ToInt32(bytes, 0);
             return (decimal)new System.Random(val).NextDouble() * max;
@@ -122,11 +106,7 @@ namespace Byte.Toolkit.Crypto.Random
         /// <param name="max">Max value</param>
         public static float GenerateFloat(float max = 1)
         {
-            byte[] bytes = new byte[sizeof(Int32)];
-            using (RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider())
-            {
-                provider.GetBytes(bytes);
-            }
+            byte[] bytes = GenerateBytes(sizeof(Int32));
 
             int val = BitConverter.ToInt32(bytes, 0);
             return (float)new System.Random(val).NextDouble() * max;
