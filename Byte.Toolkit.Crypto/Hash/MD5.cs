@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Crypto.Digests;
+﻿using Byte.Toolkit.Crypto.IO;
+using Org.BouncyCastle.Crypto.Digests;
 
 namespace Byte.Toolkit.Crypto.Hash
 {
@@ -45,6 +46,20 @@ namespace Byte.Toolkit.Crypto.Hash
             md5.DoFinal(result, 0);
 
             return result;
+        }
+
+        /// <summary>
+        /// Hash file with MD5
+        /// </summary>
+        /// <param name="filePath">File path</param>
+        /// <param name="bufferSize">Buffer size</param>
+        /// <returns>Hash</returns>
+        public static byte[] Hash(string filePath, int bufferSize = 4096)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                return Hash(fs, bufferSize);
+            }
         }
     }
 }

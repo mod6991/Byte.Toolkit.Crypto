@@ -48,5 +48,19 @@ namespace Byte.Toolkit.Crypto.Hash
 
             return result;
         }
+
+        /// <summary>
+        /// Hash file with SHA3
+        /// </summary>
+        /// <param name="filePath">File path</param>
+        /// <param name="bufferSize">Buffer size</param>
+        /// <returns>Hash</returns>
+        public static byte[] Hash(string filePath, int bufferSize = 4096)
+        {
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            {
+                return Hash(fs, bufferSize);
+            }
+        }
     }
 }
