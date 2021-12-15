@@ -9,8 +9,8 @@ namespace Byte.Toolkit.Crypto.IO
 
     public static class Base64
     {
-        private static string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        private static char padding = '=';
+        private const string CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        private const char PADDING = '=';
 
         /// <summary>
         /// Encode bytes to Base64 string
@@ -34,28 +34,28 @@ namespace Byte.Toolkit.Crypto.IO
                 b1 = data[i * 3];
                 b2 = data[i * 3 + 1];
                 b3 = data[i * 3 + 2];
-                ca[i * 4] = chars[b1 >> 2];
-                ca[i * 4 + 1] = chars[(b1 & 0x03) << 4 | b2 >> 4];
-                ca[i * 4 + 2] = chars[(b2 & 0x0f) << 2 | b3 >> 6];
-                ca[i * 4 + 3] = chars[b3 & 0x3f];
+                ca[i * 4] = CHARS[b1 >> 2];
+                ca[i * 4 + 1] = CHARS[(b1 & 0x03) << 4 | b2 >> 4];
+                ca[i * 4 + 2] = CHARS[(b2 & 0x0f) << 2 | b3 >> 6];
+                ca[i * 4 + 3] = CHARS[b3 & 0x3f];
             }
 
             if (mod == 2)
             {
                 b1 = data[i * 3];
                 b2 = data[i * 3 + 1];
-                ca[i * 4] = chars[b1 >> 2];
-                ca[i * 4 + 1] = chars[(b1 & 0x03) << 4 | b2 >> 4];
-                ca[i * 4 + 2] = chars[(b2 & 0x0f) << 2];
-                ca[i * 4 + 3] = padding;
+                ca[i * 4] = CHARS[b1 >> 2];
+                ca[i * 4 + 1] = CHARS[(b1 & 0x03) << 4 | b2 >> 4];
+                ca[i * 4 + 2] = CHARS[(b2 & 0x0f) << 2];
+                ca[i * 4 + 3] = PADDING;
             }
             else if (mod == 1)
             {
                 b1 = data[i * 3];
-                ca[i * 4] = chars[b1 >> 2];
-                ca[i * 4 + 1] = chars[(b1 & 0x03) << 4];
-                ca[i * 4 + 2] = padding;
-                ca[i * 4 + 3] = padding;
+                ca[i * 4] = CHARS[b1 >> 2];
+                ca[i * 4 + 1] = CHARS[(b1 & 0x03) << 4];
+                ca[i * 4 + 2] = PADDING;
+                ca[i * 4 + 3] = PADDING;
             }
 
             return new string(ca);
@@ -82,24 +82,24 @@ namespace Byte.Toolkit.Crypto.IO
 
             for (i = 0; i < loops; i++)
             {
-                b1 = chars.IndexOf(str[i * 4]);
+                b1 = CHARS.IndexOf(str[i * 4]);
                 if (b1 == -1)
                     throw new Base64DecodeException($"Invalid base64 char1 '{str[i * 4]}'");
 
-                b2 = chars.IndexOf(str[i * 4 + 1]);
+                b2 = CHARS.IndexOf(str[i * 4 + 1]);
                 if (b2 == -1)
                     throw new Base64DecodeException($"Invalid base64 char2 '{str[i * 4 + 1]}'");
 
-                b3 = chars.IndexOf(str[i * 4 + 2]);
-                if (b3 == -1 && str[i * 4 + 2] != padding)
+                b3 = CHARS.IndexOf(str[i * 4 + 2]);
+                if (b3 == -1 && str[i * 4 + 2] != PADDING)
                     throw new Base64DecodeException($"Invalid base64 char3 '{str[i * 4 + 2]}'");
-                if (str[i * 4 + 2] == padding)
+                if (str[i * 4 + 2] == PADDING)
                     paddings++;
 
-                b4 = chars.IndexOf(str[i * 4 + 3]);
-                if (b4 == -1 && str[i * 4 + 3] != padding)
+                b4 = CHARS.IndexOf(str[i * 4 + 3]);
+                if (b4 == -1 && str[i * 4 + 3] != PADDING)
                     throw new Base64DecodeException($"Invalid base64 char4 '{str[i * 4 + 3]}'");
-                if (str[i * 4 + 3] == padding)
+                if (str[i * 4 + 3] == PADDING)
                     paddings++;
 
 
