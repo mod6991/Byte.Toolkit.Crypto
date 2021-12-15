@@ -21,7 +21,7 @@ namespace Byte.Toolkit.Crypto.Padding
         byte[] UnPad(byte[] paddedData, int blockSize);
     }
 
-    public class PaddingException : Exception
+    public sealed class PaddingException : Exception
     {
         public PaddingException(string message) : base(message) { }
     }

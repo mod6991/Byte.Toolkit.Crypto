@@ -89,7 +89,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
             BinaryHelper.WriteLV(output, new byte[0]);
         }
 
-        internal static void XorEncryptAndWrite(Stream output, int size, byte[] data, byte[] key1, byte[] iv1, byte[] key2, byte[] iv2)
+        private static void XorEncryptAndWrite(Stream output, int size, byte[] data, byte[] key1, byte[] iv1, byte[] key2, byte[] iv2)
         {
             byte[] rpad = RandomHelper.GenerateBytes(size);
             byte[] xor = new byte[size];

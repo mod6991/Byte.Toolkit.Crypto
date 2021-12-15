@@ -2,7 +2,7 @@
 
 namespace Byte.Toolkit.Crypto.Padding
 {
-    public class Pkcs7Padding : IDataPadding
+    public sealed class Pkcs7Padding : IDataPadding
     {
         /// <summary>
         /// Pad data with PKCS#7

@@ -65,7 +65,7 @@ namespace Byte.Toolkit.Crypto.IO.TLV
         }
     }
 
-    public class BinaryTlvReader
+    public sealed class BinaryTlvReader
     {
         private Stream _input;
         private byte _tagLength;

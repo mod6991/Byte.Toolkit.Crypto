@@ -2,7 +2,7 @@
 
 namespace Byte.Toolkit.Crypto.Padding
 {
-    public class AnsiX923Padding : IDataPadding
+    public sealed class AnsiX923Padding : IDataPadding
     {
         /// <summary>
         /// Pad data with ANSI X9.23

@@ -1,6 +1,6 @@
 ﻿namespace Byte.Toolkit.Crypto.Padding
 {
-    public class NoPadding : IDataPadding
+    public sealed class NoPadding : IDataPadding
     {
         public byte[] Pad(byte[] data, int blockSize)
         {

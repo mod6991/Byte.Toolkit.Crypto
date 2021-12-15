@@ -2,7 +2,7 @@
 
 namespace Byte.Toolkit.Crypto.Padding
 {
-    public class Iso7816Padding : IDataPadding
+    public sealed class Iso7816Padding : IDataPadding
     {
         /// <summary>
         /// Pad data with ISO/IEC 7816-4

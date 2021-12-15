@@ -2,15 +2,15 @@
 
 namespace Byte.Toolkit.Crypto.IO
 {
-    public class Base64DecodeException : Exception
+    public sealed class Base64DecodeException : Exception
     {
         public Base64DecodeException(string message) : base(message) { }
     }
 
     public static class Base64
     {
-        internal static string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-        internal static char padding = '=';
+        private static string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        private static char padding = '=';
 
         /// <summary>
         /// Encode bytes to Base64 string

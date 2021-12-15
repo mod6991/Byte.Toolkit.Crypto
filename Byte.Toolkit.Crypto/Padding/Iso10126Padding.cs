@@ -3,7 +3,7 @@ using System;
 
 namespace Byte.Toolkit.Crypto.Padding
 {
-    public class Iso10126Padding : IDataPadding
+    public sealed class Iso10126Padding : IDataPadding
     {
         /// <summary>
         /// Pad data with ISO 10126

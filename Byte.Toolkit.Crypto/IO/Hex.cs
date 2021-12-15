@@ -2,7 +2,7 @@
 
 namespace Byte.Toolkit.Crypto.IO
 {
-    public class HexDecodeException : Exception
+    public sealed class HexDecodeException : Exception
     {
         public HexDecodeException(string message) : base(message) { }
     }
