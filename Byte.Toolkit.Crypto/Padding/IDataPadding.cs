@@ -1,4 +1,6 @@
-﻿namespace Byte.Toolkit.Crypto.Padding
+﻿using System;
+
+namespace Byte.Toolkit.Crypto.Padding
 {
     public interface IDataPadding
     {

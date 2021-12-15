@@ -1,4 +1,6 @@
-﻿namespace Byte.Toolkit.Crypto.IO
+﻿using System;
+
+namespace Byte.Toolkit.Crypto.IO
 {
     public class HexDecodeException : Exception
     {

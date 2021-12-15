@@ -1,5 +1,7 @@
 ﻿using Byte.Toolkit.Crypto.Padding;
 using Org.BouncyCastle.Crypto;
+using System;
+using System.IO;
 
 namespace Byte.Toolkit.Crypto.SymKey
 {

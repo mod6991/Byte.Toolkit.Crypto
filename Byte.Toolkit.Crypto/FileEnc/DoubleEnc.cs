@@ -3,6 +3,8 @@ using Byte.Toolkit.Crypto.KDF;
 using Byte.Toolkit.Crypto.Padding;
 using Byte.Toolkit.Crypto.Random;
 using Byte.Toolkit.Crypto.SymKey;
+using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 

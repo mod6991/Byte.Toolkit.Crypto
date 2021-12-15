@@ -1,4 +1,7 @@
-﻿namespace Byte.Toolkit.Crypto.IO
+﻿using System;
+using System.IO;
+
+namespace Byte.Toolkit.Crypto.IO
 {
     public static class StreamHelper
     {

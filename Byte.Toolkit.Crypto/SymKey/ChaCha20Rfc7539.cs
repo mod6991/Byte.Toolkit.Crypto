@@ -1,6 +1,8 @@
 ﻿using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Parameters;
+using System;
+using System.IO;
 
 namespace Byte.Toolkit.Crypto.SymKey
 {

@@ -1,5 +1,6 @@
 ﻿using Byte.Toolkit.Crypto.IO;
 using Org.BouncyCastle.Crypto.Digests;
+using System.IO;
 
 namespace Byte.Toolkit.Crypto.Hash
 {
