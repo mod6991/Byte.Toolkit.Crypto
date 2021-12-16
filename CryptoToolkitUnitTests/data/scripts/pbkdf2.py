@@ -3,7 +3,7 @@ from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA1
 
 def main():
-    with open(r'data\pbkdf2.csv', 'w') as file:
+    with open(r'..\pbkdf2.csv', 'w') as file:
         file.write('Password,Salt,Key\n')
         for i in range(1, 100 + 1):
             password = get_random_bytes(8).hex()

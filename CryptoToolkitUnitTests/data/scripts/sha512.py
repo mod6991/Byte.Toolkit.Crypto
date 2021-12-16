@@ -3,7 +3,7 @@ from base64 import b64encode
 from Crypto.Hash import SHA512
 
 def main():
-    with open(r'data\sha512.csv', 'w') as file:
+    with open(r'..\sha512.csv', 'w') as file:
         file.write('Base64,SHA512 hash\n')
         for i in range(1, 500 + 1):
             data = get_random_bytes(i)
