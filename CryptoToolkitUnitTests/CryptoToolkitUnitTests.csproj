@@ -24,6 +24,9 @@
     <None Update="data\md5.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="data\pbkdf2.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="data\sha1.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
