@@ -10,19 +10,19 @@ namespace CryptoToolkitUnitTests.KDF
 {
     public class PBKDF2Tests
     {
-        [TestCaseSource(nameof(AdvancedTestsSource))]
-        public void AdvancedTests(Tuple<string, string, string> results)
+        [TestCaseSource(nameof(CsvTestSource))]
+        public void GenerateKeyFromPassword(Tuple<string, string, string> values)
         {
-            string password = results.Item1;
-            byte[] salt = Hex.Decode(results.Item2);
-            string hexKey = results.Item3;
+            string password = values.Item1;
+            byte[] salt = Hex.Decode(values.Item2);
+            string hexKey = values.Item3;
 
             byte[] key = PBKDF2.GenerateKeyFromPassword(32, password, salt, 50000);
 
             Assert.AreEqual(hexKey, Hex.Encode(key));
         }
 
-        static IEnumerable<Tuple<string, string, string>> AdvancedTestsSource()
+        static IEnumerable<Tuple<string, string, string>> CsvTestSource()
         {
             using (FileStream fs = new FileStream(@"data/pbkdf2.csv", FileMode.Open, FileAccess.Read))
             {

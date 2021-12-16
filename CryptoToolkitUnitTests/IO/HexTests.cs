@@ -9,29 +9,33 @@ namespace CryptoToolkitUnitTests.IO
 {
     public class HexTests
     {
-        [TestCaseSource(nameof(BaseTestsSource))]
-        public void BaseTests(byte[] data, string hexStr)
+        [Test]
+        public void EncodeEmpty()
         {
-            Assert.AreEqual(hexStr, Hex.Encode(data));
+            Assert.AreEqual("", Hex.Encode(new byte[] { }));
         }
 
-        [TestCaseSource(nameof(AdvancedTestsSource))]
-        public void AdvancedTests(Tuple<string, string> results)
+        [TestCaseSource(nameof(CsvTestSource))]
+        public void Encode(Tuple<string, string> values)
         {
-            byte[] data = Base64.Decode(results.Item2);
-            Assert.AreEqual(results.Item1, Hex.Encode(data));
+            byte[] data = Base64.Decode(values.Item2);
+            Assert.AreEqual(values.Item1, Hex.Encode(data));
         }
 
-        static object[] BaseTestsSource =
+        [Test]
+        public void DecodeEmpty()
         {
-            new object[] { new byte[] { }, "" },
-            new object[] { new byte[] { 0x12 }, "12" },
-            new object[] { new byte[] { 0x12, 0x34 }, "1234" },
-            new object[] { new byte[] { 0x12, 0x34, 0x56 }, "123456" },
-            new object[] { new byte[] { 0x12, 0x34, 0x56, 0xdf }, "123456df" }
-        };
+            Assert.AreEqual(new byte[] { }, Hex.Decode(""));
+        }
 
-        static IEnumerable<Tuple<string, string>> AdvancedTestsSource()
+        [TestCaseSource(nameof(CsvTestSource))]
+        public void Decode(Tuple<string, string> values)
+        {
+            byte[] data = Hex.Decode(values.Item1);
+            Assert.AreEqual(values.Item2, Base64.Encode(data));
+        }
+
+        static IEnumerable<Tuple<string, string>> CsvTestSource()
         {
             using (FileStream fs = new FileStream(@"data/hex_base64.csv", FileMode.Open, FileAccess.Read))
             {

@@ -10,26 +10,14 @@ namespace CryptoToolkitUnitTests.Hash
 {
     public class MD5Tests
     {
-        [TestCaseSource(nameof(BaseTestsSource))]
-        public void BaseTests(byte[] data, string hexStr)
+        [TestCaseSource(nameof(CsvTestSource))]
+        public void Hash(Tuple<string, string> values)
         {
-            Assert.AreEqual(hexStr, Hex.Encode(MD5.Hash(data)));
+            byte[] data = Base64.Decode(values.Item1);
+            Assert.AreEqual(values.Item2, Hex.Encode(MD5.Hash(data)));
         }
 
-        [TestCaseSource(nameof(AdvancedTestsSource))]
-        public void AdvancedTests(Tuple<string, string> results)
-        {
-            byte[] data = Base64.Decode(results.Item1);
-            Assert.AreEqual(results.Item2, Hex.Encode(MD5.Hash(data)));
-        }
-
-        static object[] BaseTestsSource =
-        {
-            new object[] { new byte[] { }, "d41d8cd98f00b204e9800998ecf8427e" },
-            new object[] { Encoding.ASCII.GetBytes("abc"), "900150983cd24fb0d6963f7d28e17f72" },
-        };
-
-        static IEnumerable<Tuple<string, string>> AdvancedTestsSource()
+        static IEnumerable<Tuple<string, string>> CsvTestSource()
         {
             using (FileStream fs = new FileStream(@"data/md5.csv", FileMode.Open, FileAccess.Read))
             {

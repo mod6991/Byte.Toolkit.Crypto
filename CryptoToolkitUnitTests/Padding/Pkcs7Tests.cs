@@ -11,23 +11,37 @@ namespace CryptoToolkitUnitTests.Padding
 {
     public class Pkcs7Tests
     {
-        [TestCaseSource(nameof(AdvancedTestsSource))]
-        public void PadTests(Tuple<string, string> results)
+        [Test]
+        public void PadEmpty()
         {
-            byte[] data = Base64.Decode(results.Item1);
+            byte[] padded = new Pkcs7Padding().Pad(new byte[] { }, 16);
+            Assert.AreEqual("10101010101010101010101010101010", Hex.Encode(padded));
+        }
+
+        [TestCaseSource(nameof(CsvTestSource))]
+        public void Pad(Tuple<string, string> values)
+        {
+            byte[] data = Base64.Decode(values.Item1);
             byte[] padded = new Pkcs7Padding().Pad(data, 16);
-            Assert.AreEqual(results.Item2, Base64.Encode(padded));
+            Assert.AreEqual(values.Item2, Base64.Encode(padded));
         }
 
-        [TestCaseSource(nameof(AdvancedTestsSource))]
-        public void UnpadTests(Tuple<string, string> results)
+        [Test]
+        public void UnpadEmpty()
         {
-            byte[] padded = Base64.Decode(results.Item2);
-            byte[] data = new Pkcs7Padding().UnPad(padded, 16);
-            Assert.AreEqual(results.Item1, Base64.Encode(data));
+            byte[] data = new Pkcs7Padding().UnPad(Hex.Decode("10101010101010101010101010101010"), 16);
+            Assert.AreEqual(new byte[] { }, data);
         }
 
-        static IEnumerable<Tuple<string, string>> AdvancedTestsSource()
+        [TestCaseSource(nameof(CsvTestSource))]
+        public void Unpad(Tuple<string, string> values)
+        {
+            byte[] padded = Base64.Decode(values.Item2);
+            byte[] data = new Pkcs7Padding().UnPad(padded, 16);
+            Assert.AreEqual(values.Item1, Base64.Encode(data));
+        }
+
+        static IEnumerable<Tuple<string, string>> CsvTestSource()
         {
             using (FileStream fs = new FileStream(@"data/pkcs7.csv", FileMode.Open, FileAccess.Read))
             {

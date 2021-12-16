@@ -10,26 +10,14 @@ namespace CryptoToolkitUnitTests.Hash
 {
     public class SHA256Tests
     {
-        [TestCaseSource(nameof(BaseTestsSource))]
-        public void BaseTests(byte[] data, string hexStr)
+        [TestCaseSource(nameof(CsvTestSource))]
+        public void AdvancedTests(Tuple<string, string> values)
         {
-            Assert.AreEqual(hexStr, Hex.Encode(SHA256.Hash(data)));
+            byte[] data = Base64.Decode(values.Item1);
+            Assert.AreEqual(values.Item2, Hex.Encode(SHA256.Hash(data)));
         }
 
-        [TestCaseSource(nameof(AdvancedTestsSource))]
-        public void AdvancedTests(Tuple<string, string> results)
-        {
-            byte[] data = Base64.Decode(results.Item1);
-            Assert.AreEqual(results.Item2, Hex.Encode(SHA256.Hash(data)));
-        }
-
-        static object[] BaseTestsSource =
-        {
-            new object[] { new byte[] { }, "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855" },
-            new object[] { Encoding.ASCII.GetBytes("abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad" },
-        };
-
-        static IEnumerable<Tuple<string, string>> AdvancedTestsSource()
+        static IEnumerable<Tuple<string, string>> CsvTestSource()
         {
             using (FileStream fs = new FileStream(@"data/sha256.csv", FileMode.Open, FileAccess.Read))
             {
