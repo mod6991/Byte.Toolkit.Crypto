@@ -17,4 +17,14 @@
     <ProjectReference Include="..\Byte.Toolkit.Crypto\Byte.Toolkit.Crypto.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="data\scripts\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="data\hex_base64.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
