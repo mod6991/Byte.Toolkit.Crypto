@@ -5,7 +5,7 @@ using System.Text;
 using Byte.Toolkit.Crypto.IO;
 using NUnit.Framework;
 
-namespace CryptoToolkitUnitTests
+namespace CryptoToolkitUnitTests.IO
 {
     public class Base64Tests
     {

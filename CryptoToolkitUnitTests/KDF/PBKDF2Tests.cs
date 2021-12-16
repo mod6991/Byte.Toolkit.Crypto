@@ -6,7 +6,7 @@ using Byte.Toolkit.Crypto.KDF;
 using Byte.Toolkit.Crypto.IO;
 using NUnit.Framework;
 
-namespace CryptoToolkitUnitTests
+namespace CryptoToolkitUnitTests.KDF
 {
     public class PBKDF2Tests
     {
