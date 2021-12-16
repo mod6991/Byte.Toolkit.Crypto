@@ -45,12 +45,19 @@ namespace Byte.Toolkit.Crypto.Padding
             if (paddedData.Length % blockSize != 0 || paddedData.Length == 0)
                 throw new PaddingException("Data is not padded");
 
+            bool foundx80 = false;
             int unpadLength;
-            for (unpadLength = paddedData.Length - 1; unpadLength >= 0; unpadLength--)
+            for (unpadLength = paddedData.Length - 1; unpadLength >= paddedData.Length - blockSize; unpadLength--)
+            {
+                //TODO: check for 0x00 values !!!!
                 if (paddedData[unpadLength] == 0x80)
+                {
+                    foundx80 = true;
                     break;
+                }
+            }
 
-            if (unpadLength == 0)
+            if (!foundx80)
                 throw new PaddingException("Invalid Iso7816 padding");
 
             byte[] unpaddedData = new byte[unpadLength];
