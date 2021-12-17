@@ -11,15 +11,18 @@ namespace Byte.Toolkit.Crypto.Padding
         /// <param name="blockSize">Block size</param>
         /// <returns>Padded data</returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public byte[] Pad(byte[] data, int blockSize)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
+            if (blockSize < 1 || blockSize > byte.MaxValue)
+                throw new ArgumentException("Invalid block size", nameof(blockSize));
 
             int paddingLength = blockSize - data.Length % blockSize;
-
             byte[] paddedData = new byte[data.Length + paddingLength];
             Array.Copy(data, 0, paddedData, 0, data.Length);
+
             for (int i = data.Length; i < paddedData.Length; i++)
                 paddedData[i] = (byte)paddingLength;
 
@@ -33,18 +36,20 @@ namespace Byte.Toolkit.Crypto.Padding
         /// <param name="blockSize">Block size</param>
         /// <returns>Unpadded data</returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         /// <exception cref="PaddingException"></exception>
         public byte[] UnPad(byte[] paddedData, int blockSize)
         {
             if (paddedData == null)
-                throw new ArgumentNullException("paddedData");
-
-            if (paddedData.Length % blockSize != 0 || paddedData.Length == 0)
-                throw new PaddingException("Data is not padded");
+                throw new ArgumentNullException(nameof(paddedData));
+            if (blockSize < 1 || blockSize > byte.MaxValue)
+                throw new ArgumentException("Invalid block size", nameof(blockSize));
+            if (paddedData.Length % blockSize != 0 || paddedData.Length < blockSize)
+                throw new PaddingException("Invalid pad length");
 
             byte paddingLength = paddedData[paddedData.Length - 1];
 
-            for (int i = paddedData.Length - 2; i > paddedData.Length - paddingLength - 1; i--)
+            for (int i = paddedData.Length - 2; i >= paddedData.Length - paddingLength; i--)
             {
                 if (paddedData[i] != paddingLength)
                     throw new PaddingException("Invalid Pkcs7 padding");

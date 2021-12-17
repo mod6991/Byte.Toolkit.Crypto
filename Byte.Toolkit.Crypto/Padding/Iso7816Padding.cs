@@ -11,13 +11,15 @@ namespace Byte.Toolkit.Crypto.Padding
         /// <param name="blockSize">Block size</param>
         /// <returns>Padded data</returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public byte[] Pad(byte[] data, int blockSize)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
+            if (blockSize < 1 || blockSize > byte.MaxValue)
+                throw new ArgumentException("Invalid block size", nameof(blockSize));
 
             int paddingLength = blockSize - data.Length % blockSize;
-
             byte[] paddedData = new byte[data.Length + paddingLength];
             Array.Copy(data, 0, paddedData, 0, data.Length);
 
@@ -36,24 +38,30 @@ namespace Byte.Toolkit.Crypto.Padding
         /// <param name="blockSize">Block size</param>
         /// <returns>Unpadded data</returns>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         /// <exception cref="PaddingException"></exception>
         public byte[] UnPad(byte[] paddedData, int blockSize)
         {
             if (paddedData == null)
-                throw new ArgumentNullException("paddedData");
-
-            if (paddedData.Length % blockSize != 0 || paddedData.Length == 0)
-                throw new PaddingException("Data is not padded");
+                throw new ArgumentNullException(nameof(paddedData));
+            if (blockSize < 1 || blockSize > byte.MaxValue)
+                throw new ArgumentException("Invalid block size", nameof(blockSize));
+            if (paddedData.Length % blockSize != 0 || paddedData.Length < blockSize)
+                throw new PaddingException("Invalid pad length");
 
             bool foundx80 = false;
             int unpadLength;
             for (unpadLength = paddedData.Length - 1; unpadLength >= paddedData.Length - blockSize; unpadLength--)
             {
-                //TODO: check for 0x00 values !!!!
                 if (paddedData[unpadLength] == 0x80)
                 {
                     foundx80 = true;
                     break;
+                }
+                else
+                {
+                    if (paddedData[unpadLength] != 0)
+                        throw new PaddingException("Invalid Iso7816 padding");
                 }
             }
 
