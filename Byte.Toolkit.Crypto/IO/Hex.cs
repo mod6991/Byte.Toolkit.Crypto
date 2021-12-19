@@ -17,7 +17,7 @@ namespace Byte.Toolkit.Crypto.IO
         public static string Encode(byte[] data)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
 
             char[] ca = new char[data.Length * 2];
             byte b;
@@ -41,7 +41,7 @@ namespace Byte.Toolkit.Crypto.IO
         public static byte[] Decode(string str)
         {
             if (str == null)
-                throw new ArgumentNullException("str");
+                throw new ArgumentNullException(nameof(str));
 
             if (str.Length % 2 != 0)
                 throw new HexDecodeException("Invalid input string length (not a multiple of 2)");

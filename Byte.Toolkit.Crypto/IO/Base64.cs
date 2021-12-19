@@ -20,7 +20,7 @@ namespace Byte.Toolkit.Crypto.IO
         public static string Encode(byte[] data)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
 
             int stringSize = data.Length % 3 == 0 ? (data.Length / 3) * 4 : (data.Length / 3 + 1) * 4;
             char[] ca = new char[stringSize];
@@ -69,7 +69,7 @@ namespace Byte.Toolkit.Crypto.IO
         public static byte[] Decode(string str)
         {
             if (str == null)
-                throw new ArgumentNullException("str");
+                throw new ArgumentNullException(nameof(str));
 
             if (str.Length % 4 != 0)
                 throw new Base64DecodeException("Invalid input string length (not a multiple of 4)");

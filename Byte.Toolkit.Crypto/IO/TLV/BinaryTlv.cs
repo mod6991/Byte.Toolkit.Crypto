@@ -28,10 +28,10 @@ namespace Byte.Toolkit.Crypto.IO.TLV
         public void Write(string tag, byte[] value)
         {
             if (string.IsNullOrWhiteSpace(tag))
-                throw new ArgumentException("tag");
+                throw new ArgumentException(nameof(tag));
 
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             if (_tags.Contains(tag))
                 throw new TlvException($"Tag '{tag}' already written");

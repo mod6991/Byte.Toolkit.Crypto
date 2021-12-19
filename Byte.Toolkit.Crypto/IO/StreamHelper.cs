@@ -34,7 +34,7 @@ namespace Byte.Toolkit.Crypto.IO
         public static void WriteStream(Stream input, Stream output, Action<int> notifyProgression, int bufferSize = 4096)
         {
             if (notifyProgression == null)
-                throw new ArgumentNullException("notifyProgression");
+                throw new ArgumentNullException(nameof(notifyProgression));
 
             byte[] buffer = new byte[bufferSize];
             int bytesRead;
