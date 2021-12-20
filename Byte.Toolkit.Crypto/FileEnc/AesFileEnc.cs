@@ -4,11 +4,8 @@ using Byte.Toolkit.Crypto.Padding;
 using Byte.Toolkit.Crypto.Random;
 using Byte.Toolkit.Crypto.SymKey;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Byte.Toolkit.Crypto.FileEnc
 {
