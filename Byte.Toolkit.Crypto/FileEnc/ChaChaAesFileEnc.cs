@@ -15,15 +15,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
         private const byte _version = 0x04;
         private const int _bufferSize = 4096;
 
-        /// <summary>
-        /// Encrypt with RSA key
-        /// </summary>
-        /// <param name="input">Input stream</param>
-        /// <param name="output">Output stream</param>
-        /// <param name="rsa">RSA key</param>
-        /// <param name="keyName">Key name</param>
-        /// <param name="notifyProgression">Notify progression method</param>
-        public static void EncryptWithKey(Stream input, Stream output, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
+        public static void Encrypt(Stream input, Stream output, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
         {
             IDataPadding padding = new Pkcs7Padding();
 
@@ -104,39 +96,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
             BinaryHelper.WriteLV(output, d2);
         }
 
-        /// <summary>
-        /// Encrypt with password
-        /// </summary>
-        /// <param name="input">Input stream</param>
-        /// <param name="output">Output stream</param>
-        /// <param name="password">Password</param>
-        /// <param name="notifyProgression">Notify progression method</param>
-        public static void EncryptWithPassword(Stream input, Stream output, string password, Action<int> notifyProgression = null)
-        {
-            IDataPadding padding = new Pkcs7Padding();
-
-            byte[] salt = RandomHelper.GenerateBytes(16);
-            byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt);
-            byte[] iv = RandomHelper.GenerateBytes(AES.IV_SIZE);
-
-            BinaryHelper.Write(output, "ENCP!", Encoding.ASCII);
-            BinaryHelper.Write(output, _version);
-            BinaryHelper.Write(output, (byte)iv.Length);
-            BinaryHelper.Write(output, (byte)salt.Length);
-            BinaryHelper.Write(output, iv);
-            BinaryHelper.Write(output, salt);
-
-            AES.EncryptCBC(input, output, key, iv, padding, notifyProgression);
-        }
-
-        /// <summary>
-        /// Decrypt with RSA key
-        /// </summary>
-        /// <param name="input">Input stream</param>
-        /// <param name="output">Output stream</param>
-        /// <param name="rsa">RSA key</param>
-        /// <param name="notifyProgression">Notify progression method</param>
-        public static void DecryptWithKey(Stream input, Stream output, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
+        public static void Decrypt(Stream input, Stream output, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
         {
             IDataPadding padding = new Pkcs7Padding();
 
@@ -192,33 +152,6 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
 
             } while (d1.Length > 0);
-        }
-
-        /// <summary>
-        /// Decrypt with password
-        /// </summary>
-        /// <param name="input">Input stream</param>
-        /// <param name="output">Output stream</param>
-        /// <param name="password">Password</param>
-        /// <param name="notifyProgression">Notify progression method</param>
-        public static void DecryptWithPassword(Stream input, Stream output, string password, Action<int> notifyProgression = null)
-        {
-            IDataPadding padding = new Pkcs7Padding();
-
-            input.Seek(5, SeekOrigin.Current); // Header
-            input.Seek(1, SeekOrigin.Current); // Version
-
-            byte ivLength = BinaryHelper.ReadByte(input);
-            byte saltLength = BinaryHelper.ReadByte(input);
-            byte[] iv = BinaryHelper.ReadBytes(input, ivLength);
-            byte[] salt = BinaryHelper.ReadBytes(input, saltLength);
-
-            if (notifyProgression != null)
-                notifyProgression(5 + 1 + 1 + 1 + ivLength + saltLength);
-
-            byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt);
-
-            AES.DecryptCBC(input, output, key, iv, padding, notifyProgression);
         }
     }
 }
