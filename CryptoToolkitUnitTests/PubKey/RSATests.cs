@@ -6,7 +6,7 @@ using Byte.Toolkit.Crypto.IO;
 using Byte.Toolkit.Crypto.PubKey;
 using NUnit.Framework;
 
-namespace CryptoToolkitUnitTests.SymKey
+namespace CryptoToolkitUnitTests.PubKey
 {
     public class RSATests
     {
