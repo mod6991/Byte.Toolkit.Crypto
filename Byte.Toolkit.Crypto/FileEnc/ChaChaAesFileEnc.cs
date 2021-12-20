@@ -9,13 +9,34 @@ using System.Text;
 
 namespace Byte.Toolkit.Crypto.FileEnc
 {
+    /// <summary>
+    /// Encrypt/Decrypt files with ChaCha20Rfc7539 and AES-256 (with RSA key or password)
+    /// </summary>
     public static class ChaChaAesFileEnc
     {
         private const byte _version = 0x04;
         private const int _bufferSize = 4096;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="rsa"></param>
+        /// <param name="keyName"></param>
+        /// <param name="notifyProgression"></param>
+        /// <exception cref="ArgumentNullException"></exception>
         public static void Encrypt(Stream input, Stream output, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+            if (keyName == null)
+                throw new ArgumentNullException(nameof(keyName));
+
             IDataPadding padding = new Pkcs7Padding();
 
             byte[] key1 = RandomHelper.GenerateBytes(ChaCha20Rfc7539.KEY_SIZE);
@@ -80,23 +101,90 @@ namespace Byte.Toolkit.Crypto.FileEnc
             BinaryHelper.WriteLV(output, new byte[0]);
         }
 
-        private static void XorEncryptAndWrite(Stream output, int size, byte[] data, byte[] key1, byte[] iv1, byte[] key2, byte[] iv2)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <param name="outputFile"></param>
+        /// <param name="rsa"></param>
+        /// <param name="keyName"></param>
+        /// <param name="notifyProgression"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void Encrypt(string inputFile, string outputFile, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
         {
-            byte[] rpad = RandomHelper.GenerateBytes(size);
-            byte[] xor = new byte[size];
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+            if (keyName == null)
+                throw new ArgumentNullException(nameof(keyName));
 
-            for (int i = 0; i < size; i++)
-                xor[i] = (byte)(data[i] ^ rpad[i]);
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    Encrypt(fsIn, fsOut, rsa, keyName, notifyProgression);
+                }
+            }
+        }
 
-            byte[] d1 = ChaCha20Rfc7539.Encrypt(rpad, key1, iv1);
-            byte[] d2 = AES.EncryptCBC(xor, key2, iv2);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="password"></param>
+        /// <param name="notifyProgression"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void Encrypt(Stream input, Stream output, string password, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
 
-            BinaryHelper.WriteLV(output, d1);
-            BinaryHelper.WriteLV(output, d2);
+            //TODO!
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <param name="outputFile"></param>
+        /// <param name="password"></param>
+        /// <param name="notifyProgression"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void Encrypt(string inputFile, string outputFile, string password, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    Encrypt(fsIn, fsOut, password, notifyProgression);
+                }
+            }
         }
 
         public static void Decrypt(Stream input, Stream output, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+
             IDataPadding padding = new Pkcs7Padding();
 
             input.Seek(5, SeekOrigin.Current); // Header
@@ -151,6 +239,103 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
 
             } while (d1.Length > 0);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <param name="outputFile"></param>
+        /// <param name="rsa"></param>
+        /// <param name="notifyProgression"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void Decrypt(string inputFile, string outputFile, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    Decrypt(fsIn, fsOut, rsa, notifyProgression);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="password"></param>
+        /// <param name="notifyProgression"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void Decrypt(Stream input, Stream output, string password, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            //TODO!
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="inputFile"></param>
+        /// <param name="outputFile"></param>
+        /// <param name="password"></param>
+        /// <param name="notifyProgression"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static void Decrypt(string inputFile, string outputFile, string password, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    Decrypt(fsIn, fsOut, password, notifyProgression);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="output"></param>
+        /// <param name="size"></param>
+        /// <param name="data"></param>
+        /// <param name="key1"></param>
+        /// <param name="iv1"></param>
+        /// <param name="key2"></param>
+        /// <param name="iv2"></param>
+        private static void XorEncryptAndWrite(Stream output, int size, byte[] data, byte[] key1, byte[] iv1, byte[] key2, byte[] iv2)
+        {
+            byte[] rpad = RandomHelper.GenerateBytes(size);
+            byte[] xor = new byte[size];
+
+            for (int i = 0; i < size; i++)
+                xor[i] = (byte)(data[i] ^ rpad[i]);
+
+            byte[] d1 = ChaCha20Rfc7539.Encrypt(rpad, key1, iv1);
+            byte[] d2 = AES.EncryptCBC(xor, key2, iv2);
+
+            BinaryHelper.WriteLV(output, d1);
+            BinaryHelper.WriteLV(output, d2);
         }
     }
 }
