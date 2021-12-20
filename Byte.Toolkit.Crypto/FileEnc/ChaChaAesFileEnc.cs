@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Byte.Toolkit.Crypto.FileEnc
 {
-    public static class DoubleEnc
+    public static class ChaChaAesFileEnc
     {
         private const byte _version = 0x04;
         private const int _bufferSize = 4096;
