@@ -1,18 +1,26 @@
-﻿using Org.BouncyCastle.Crypto.Digests;
+﻿using Byte.Toolkit.Crypto.IO;
+using Org.BouncyCastle.Crypto.Digests;
+using System;
 using System.IO;
 
 namespace Byte.Toolkit.Crypto.Hash
 {
+    /// <summary>
+    /// Hash data with SHA3
+    /// </summary>
     public static class SHA3
     {
         /// <summary>
         /// Hash data with SHA3
         /// </summary>
         /// <param name="data">Data to hash</param>
-        /// <param name="bitLength">Size in bits</param>
-        /// <returns>Hash</returns>
+        /// <returns>SHA3 hash</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static byte[] Hash(byte[] data, int bitLength = 512)
         {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
             byte[] result = new byte[bitLength / 8];
 
             Sha3Digest sha3 = new Sha3Digest(bitLength);
@@ -23,14 +31,17 @@ namespace Byte.Toolkit.Crypto.Hash
         }
 
         /// <summary>
-        /// Hash stream with SHA3
+        /// Hash data from stream with SHA3
         /// </summary>
         /// <param name="input">Input stream</param>
-        /// <param name="bitLength">Size in bits</param>
         /// <param name="bufferSize">Buffer size</param>
-        /// <returns>Hash</returns>
+        /// <returns>SHA3 hash</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static byte[] Hash(Stream input, int bitLength = 512, int bufferSize = 4096)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
             byte[] result = new byte[bitLength / 8];
 
             Sha3Digest sha3 = new Sha3Digest(bitLength);
@@ -53,12 +64,16 @@ namespace Byte.Toolkit.Crypto.Hash
         /// <summary>
         /// Hash file with SHA3
         /// </summary>
-        /// <param name="filePath">File path</param>
+        /// <param name="inputFile">File to hash</param>
         /// <param name="bufferSize">Buffer size</param>
-        /// <returns>Hash</returns>
-        public static byte[] Hash(string filePath, int bufferSize = 4096)
+        /// <returns>SHA3 hash</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static byte[] Hash(string inputFile, int bufferSize = 4096)
         {
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+
+            using (FileStream fs = StreamHelper.GetFileStreamOpen(inputFile))
             {
                 return Hash(fs, bufferSize);
             }

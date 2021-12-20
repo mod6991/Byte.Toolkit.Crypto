@@ -1,18 +1,32 @@
-﻿using Org.BouncyCastle.Crypto.Digests;
+﻿using Byte.Toolkit.Crypto.IO;
+using Org.BouncyCastle.Crypto.Digests;
+using System;
 using System.IO;
 
 namespace Byte.Toolkit.Crypto.Hash
 {
+    /// <summary>
+    /// Hash data with SHA512
+    /// </summary>
     public static class SHA512
     {
+        /// <summary>
+        /// SHA512 hash size
+        /// </summary>
+        public const int HASH_SIZE = 64;
+
         /// <summary>
         /// Hash data with SHA512
         /// </summary>
         /// <param name="data">Data to hash</param>
-        /// <returns>Hash</returns>
+        /// <returns>SHA512 hash</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static byte[] Hash(byte[] data)
         {
-            byte[] result = new byte[64];
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+
+            byte[] result = new byte[HASH_SIZE];
 
             Sha512Digest sha512 = new Sha512Digest();
             sha512.BlockUpdate(data, 0, data.Length);
@@ -22,14 +36,18 @@ namespace Byte.Toolkit.Crypto.Hash
         }
 
         /// <summary>
-        /// Hash stream with SHA512
+        /// Hash data from stream with SHA512
         /// </summary>
         /// <param name="input">Input stream</param>
         /// <param name="bufferSize">Buffer size</param>
-        /// <returns>Hash</returns>
+        /// <returns>SHA512 hash</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static byte[] Hash(Stream input, int bufferSize = 4096)
         {
-            byte[] result = new byte[64];
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+
+            byte[] result = new byte[HASH_SIZE];
 
             Sha512Digest sha512 = new Sha512Digest();
             int bytesRead;
@@ -51,12 +69,16 @@ namespace Byte.Toolkit.Crypto.Hash
         /// <summary>
         /// Hash file with SHA512
         /// </summary>
-        /// <param name="filePath">File path</param>
+        /// <param name="inputFile">File to hash</param>
         /// <param name="bufferSize">Buffer size</param>
-        /// <returns>Hash</returns>
-        public static byte[] Hash(string filePath, int bufferSize = 4096)
+        /// <returns>SHA512 hash</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static byte[] Hash(string inputFile, int bufferSize = 4096)
         {
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+
+            using (FileStream fs = StreamHelper.GetFileStreamOpen(inputFile))
             {
                 return Hash(fs, bufferSize);
             }
