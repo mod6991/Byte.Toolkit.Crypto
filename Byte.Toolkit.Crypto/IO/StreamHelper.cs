@@ -56,7 +56,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// <param name="file">File path</param>
         public static FileStream GetFileStreamCreate(string file)
         {
-            return new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.Write);
+            return new FileStream(file, FileMode.Create, FileAccess.Write);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Byte.Toolkit.Crypto.IO
         /// <param name="file">File path</param>
         public static FileStream GetFileStreamOpen(string file)
         {
-            return new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return new FileStream(file, FileMode.Open, FileAccess.Read);
         }
     }
 }
