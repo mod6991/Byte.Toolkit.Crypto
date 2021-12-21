@@ -6,6 +6,17 @@ namespace Byte.Toolkit.Crypto.IO
 {
     public static class BinaryHelper
     {
+        public const int SIZEOF_BYTE = sizeof(byte);
+        public const int SIZEOF_BOOL = sizeof(bool);
+        public const int SIZEOF_INT16 = sizeof(Int16);
+        public const int SIZEOF_UINT16 = sizeof(UInt16);
+        public const int SIZEOF_INT32 = sizeof(Int32);
+        public const int SIZEOF_UINT32 = sizeof(UInt32);
+        public const int SIZEOF_INT64 = sizeof(Int64);
+        public const int SIZEOF_UINT64 = sizeof(UInt64);
+        public const int SIZEOF_FLOAT = sizeof(float);
+        public const int SIZEOF_DOUBLE = sizeof(double);
+
         /// <summary>
         /// Write byte to stream
         /// </summary>
@@ -17,7 +28,7 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            stream.Write(new byte[] { value }, 0, 1);
+            stream.Write(new byte[] { value }, 0, SIZEOF_BYTE);
         }
 
         /// <summary>
@@ -48,7 +59,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 1);
+            stream.Write(data, 0, SIZEOF_BOOL);
         }
 
         /// <summary>
@@ -63,7 +74,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 2);
+            stream.Write(data, 0, SIZEOF_INT16);
         }
 
         /// <summary>
@@ -78,7 +89,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 2);
+            stream.Write(data, 0, SIZEOF_UINT16);
         }
 
         /// <summary>
@@ -93,7 +104,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 4);
+            stream.Write(data, 0, SIZEOF_INT32);
         }
 
         /// <summary>
@@ -108,7 +119,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 4);
+            stream.Write(data, 0, SIZEOF_UINT32);
         }
 
         /// <summary>
@@ -123,7 +134,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 8);
+            stream.Write(data, 0, SIZEOF_INT64);
         }
 
         /// <summary>
@@ -138,7 +149,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 8);
+            stream.Write(data, 0, SIZEOF_UINT64);
         }
 
         /// <summary>
@@ -153,7 +164,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 4);
+            stream.Write(data, 0, SIZEOF_FLOAT);
         }
 
         /// <summary>
@@ -168,7 +179,7 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(stream));
 
             byte[] data = BitConverter.GetBytes(value);
-            stream.Write(data, 0, 8);
+            stream.Write(data, 0, SIZEOF_DOUBLE);
         }
 
         /// <summary>
@@ -218,9 +229,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[1];
+            byte[] buffer = new byte[SIZEOF_BYTE];
 
-            if (stream.Read(buffer, 0, 1) != 1)
+            if (stream.Read(buffer, 0, SIZEOF_BYTE) != SIZEOF_BYTE)
                 throw new IOException("Incorrect number of bytes returned");
 
             return buffer[0];
@@ -255,9 +266,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[1];
+            byte[] buffer = new byte[SIZEOF_BOOL];
 
-            if (stream.Read(buffer, 0, 1) != 1)
+            if (stream.Read(buffer, 0, SIZEOF_BOOL) != SIZEOF_BOOL)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToBoolean(buffer, 0);
@@ -273,9 +284,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[2];
+            byte[] buffer = new byte[SIZEOF_INT16];
 
-            if (stream.Read(buffer, 0, 2) != 2)
+            if (stream.Read(buffer, 0, SIZEOF_INT16) != SIZEOF_INT16)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToInt16(buffer, 0);
@@ -291,9 +302,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[2];
+            byte[] buffer = new byte[SIZEOF_UINT16];
 
-            if (stream.Read(buffer, 0, 2) != 2)
+            if (stream.Read(buffer, 0, SIZEOF_UINT16) != SIZEOF_UINT16)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToUInt16(buffer, 0);
@@ -309,9 +320,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[4];
+            byte[] buffer = new byte[SIZEOF_INT32];
 
-            if (stream.Read(buffer, 0, 4) != 4)
+            if (stream.Read(buffer, 0, SIZEOF_INT32) != SIZEOF_INT32)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToInt32(buffer, 0);
@@ -327,9 +338,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[4];
+            byte[] buffer = new byte[SIZEOF_UINT32];
 
-            if (stream.Read(buffer, 0, 4) != 4)
+            if (stream.Read(buffer, 0, SIZEOF_UINT32) != SIZEOF_UINT32)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToUInt32(buffer, 0);
@@ -345,9 +356,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[8];
+            byte[] buffer = new byte[SIZEOF_INT64];
 
-            if (stream.Read(buffer, 0, 8) != 8)
+            if (stream.Read(buffer, 0, SIZEOF_INT64) != SIZEOF_INT64)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToInt64(buffer, 0);
@@ -363,9 +374,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[8];
+            byte[] buffer = new byte[SIZEOF_UINT64];
 
-            if (stream.Read(buffer, 0, 8) != 8)
+            if (stream.Read(buffer, 0, SIZEOF_UINT64) != SIZEOF_UINT64)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToUInt64(buffer, 0);
@@ -381,9 +392,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[4];
+            byte[] buffer = new byte[SIZEOF_FLOAT];
 
-            if (stream.Read(buffer, 0, 4) != 4)
+            if (stream.Read(buffer, 0, SIZEOF_FLOAT) != SIZEOF_FLOAT)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToSingle(buffer, 0);
@@ -399,9 +410,9 @@ namespace Byte.Toolkit.Crypto.IO
             if (stream == null)
                 throw new ArgumentNullException(nameof(stream));
 
-            byte[] buffer = new byte[8];
+            byte[] buffer = new byte[SIZEOF_DOUBLE];
 
-            if (stream.Read(buffer, 0, 8) != 8)
+            if (stream.Read(buffer, 0, SIZEOF_DOUBLE) != SIZEOF_DOUBLE)
                 throw new IOException("Incorrect number of bytes returned");
 
             return BitConverter.ToDouble(buffer, 0);
