@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Byte.Toolkit.Crypto.IO
 {
+    /// <summary>
+    /// Binary helper class. Write and read binary values from streams
+    /// </summary>
     public static class BinaryHelper
     {
         public const int SIZEOF_BYTE = sizeof(byte);
