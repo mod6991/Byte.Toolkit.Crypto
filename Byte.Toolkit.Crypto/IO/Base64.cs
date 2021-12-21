@@ -7,16 +7,20 @@ namespace Byte.Toolkit.Crypto.IO
         public Base64DecodeException(string message) : base(message) { }
     }
 
+    /// <summary>
+    /// Base64 encoder/decoder
+    /// </summary>
     public static class Base64
     {
         private const string CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         private const char PADDING = '=';
 
         /// <summary>
-        /// Encode bytes to Base64 string
+        /// Encode byte array
         /// </summary>
-        /// <param name="data">Byte array</param>
+        /// <param name="data">Data to encode</param>
         /// <returns>Base64 string</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static string Encode(byte[] data)
         {
             if (data == null)
@@ -62,10 +66,12 @@ namespace Byte.Toolkit.Crypto.IO
         }
 
         /// <summary>
-        /// Decode Base64 string to bytes
+        /// Decode Base64 string
         /// </summary>
         /// <param name="str">Base64 string</param>
         /// <returns>Byte array</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="Base64DecodeException"></exception>
         public static byte[] Decode(string str)
         {
             if (str == null)
