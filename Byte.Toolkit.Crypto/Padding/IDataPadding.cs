@@ -2,6 +2,9 @@
 
 namespace Byte.Toolkit.Crypto.Padding
 {
+    /// <summary>
+    /// Interface defining Pad and Unpad methods
+    /// </summary>
     public interface IDataPadding
     {
         /// <summary>

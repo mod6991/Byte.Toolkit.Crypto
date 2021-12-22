@@ -3,6 +3,9 @@ using System;
 
 namespace Byte.Toolkit.Crypto.Padding
 {
+    /// <summary>
+    /// Pad and unpad data with ISO 10126
+    /// </summary>
     public sealed class Iso10126Padding : IDataPadding
     {
         /// <summary>

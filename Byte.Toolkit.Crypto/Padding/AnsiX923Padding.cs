@@ -2,6 +2,9 @@
 
 namespace Byte.Toolkit.Crypto.Padding
 {
+    /// <summary>
+    /// Pad and unpad data with ANSI X9.23
+    /// </summary>
     public sealed class AnsiX923Padding : IDataPadding
     {
         /// <summary>
