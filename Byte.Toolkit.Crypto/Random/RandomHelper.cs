@@ -3,14 +3,21 @@ using System.Security.Cryptography;
 
 namespace Byte.Toolkit.Crypto.Random
 {
+    /// <summary>
+    /// Random data generation helper class
+    /// </summary>
     public static class RandomHelper
     {
         /// <summary>
         /// Generate a byte array filled with random bytes
         /// </summary>
         /// <param name="size">Array size</param>
+        /// <exception cref="ArgumentException"></exception>
         public static byte[] GenerateBytes(int size)
         {
+            if (size < 1)
+                throw new ArgumentException($"Size cannot be less than 1", nameof(size));
+
 #if NET6_0_OR_GREATER
             return RandomNumberGenerator.GetBytes(size);
 #else
