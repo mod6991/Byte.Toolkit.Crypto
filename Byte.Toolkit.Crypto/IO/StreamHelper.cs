@@ -15,15 +15,12 @@ namespace Byte.Toolkit.Crypto.IO
         /// <param name="output">Output stream</param>
         /// <param name="bufferSize">Buffer size</param>
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
         public static void WriteStream(Stream input, Stream output, int bufferSize = 4096)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
             if (output == null)
                 throw new ArgumentNullException(nameof(output));
-            if (bufferSize < 0)
-                throw new ArgumentException($"Invalid buffer size: {bufferSize}", nameof(bufferSize));
 
             byte[] buffer = new byte[bufferSize];
             int bytesRead;
@@ -44,7 +41,6 @@ namespace Byte.Toolkit.Crypto.IO
         /// <param name="notifyProgression">Notify progression delegate</param>
         /// <param name="bufferSize">Buffer size</param>
         /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="ArgumentException"></exception>
         public static void WriteStream(Stream input, Stream output, Action<int> notifyProgression, int bufferSize = 4096)
         {
             if (input == null)
@@ -53,8 +49,6 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(output));
             if (notifyProgression == null)
                 throw new ArgumentNullException(nameof(notifyProgression));
-            if (bufferSize < 0)
-                throw new ArgumentException($"Invalid buffer size: {bufferSize}", nameof(bufferSize));
 
             byte[] buffer = new byte[bufferSize];
             int bytesRead;
