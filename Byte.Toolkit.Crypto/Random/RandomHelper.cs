@@ -16,7 +16,7 @@ namespace Byte.Toolkit.Crypto.Random
         public static byte[] GenerateBytes(int size)
         {
             if (size < 1)
-                throw new ArgumentException($"Size cannot be less than 1", nameof(size));
+                throw new ArgumentException($"Invalid size {size}", nameof(size));
 
 #if NET6_0_OR_GREATER
             return RandomNumberGenerator.GetBytes(size);
