@@ -20,7 +20,7 @@ namespace Byte.Toolkit.Crypto.Padding
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
             if (blockSize < 1 || blockSize > byte.MaxValue)
-                throw new ArgumentException("Invalid block size", nameof(blockSize));
+                throw new ArgumentException($"Invalid block size {blockSize}", nameof(blockSize));
 
             int paddingLength = blockSize - data.Length % blockSize;
             byte[] paddedData = new byte[data.Length + paddingLength];
@@ -46,9 +46,9 @@ namespace Byte.Toolkit.Crypto.Padding
             if (paddedData == null)
                 throw new ArgumentNullException(nameof(paddedData));
             if (blockSize < 1 || blockSize > byte.MaxValue)
-                throw new ArgumentException("Invalid block size", nameof(blockSize));
+                throw new ArgumentException($"Invalid block size {blockSize}", nameof(blockSize));
             if (paddedData.Length % blockSize != 0 || paddedData.Length < blockSize)
-                throw new PaddingException("Invalid pad length");
+                throw new PaddingException($"Invalid padded data length {paddedData.Length}");
 
             byte paddingLength = paddedData[paddedData.Length - 1];
 
