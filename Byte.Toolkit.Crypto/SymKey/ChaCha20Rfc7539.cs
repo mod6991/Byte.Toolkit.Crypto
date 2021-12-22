@@ -6,9 +6,19 @@ using System.IO;
 
 namespace Byte.Toolkit.Crypto.SymKey
 {
+    /// <summary>
+    /// Encrypt/Decrypt data with ChaCha20 RFC 7539
+    /// </summary>
     public static class ChaCha20Rfc7539
     {
+        /// <summary>
+        /// ChaCha20 RFC 7539 key size
+        /// </summary>
         public const int KEY_SIZE = 32;
+
+        /// <summary>
+        /// ChaCha20 RFC 7539 nonce size
+        /// </summary>
         public const int NONCE_SIZE = 12;
 
         /// <summary>
@@ -18,8 +28,16 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="key">Key</param>
         /// <param name="nonce">Nonce</param>
         /// <returns>Encrypted data</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static byte[] Encrypt(byte[] data, byte[] key, byte[] nonce)
         {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (nonce == null)
+                throw new ArgumentNullException(nameof(nonce));
+
             byte[] enc = new byte[data.Length];
 
             ChaCha7539Engine engine = new ChaCha7539Engine();
@@ -39,8 +57,18 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="nonce">Nonce</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public static void Encrypt(Stream input, Stream output, byte[] key, byte[] nonce, Action<int> notifyProgression = null, int bufferSize = 4096)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (nonce == null)
+                throw new ArgumentNullException(nameof(nonce));
+
             ChaCha7539Engine engine = new ChaCha7539Engine();
             ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
             engine.Init(true, parameters);
@@ -70,8 +98,16 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="key">Key</param>
         /// <param name="nonce">Nonce</param>
         /// <returns>Decrypted data</returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public static byte[] Decrypt(byte[] data, byte[] key, byte[] nonce)
         {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (nonce == null)
+                throw new ArgumentNullException(nameof(nonce));
+
             byte[] dec = new byte[data.Length];
 
             ChaCha7539Engine engine = new ChaCha7539Engine();
@@ -91,8 +127,18 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="nonce">Nonce</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public static void Decrypt(Stream input, Stream output, byte[] key, byte[] nonce, Action<int> notifyProgression = null, int bufferSize = 4096)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (nonce == null)
+                throw new ArgumentNullException(nameof(nonce));
+
             ChaCha7539Engine engine = new ChaCha7539Engine();
             ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
             engine.Init(false, parameters);

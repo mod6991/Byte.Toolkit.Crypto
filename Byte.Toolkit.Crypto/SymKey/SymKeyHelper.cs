@@ -5,6 +5,9 @@ using System.IO;
 
 namespace Byte.Toolkit.Crypto.SymKey
 {
+    /// <summary>
+    /// Encrypt/Decrypt with symmetric cipher in CBC mode and pad/unpad data
+    /// </summary>
     internal static class SymKeyHelper
     {
         /// <summary>
@@ -17,9 +20,19 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="padding">Padding</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public static void EncryptCBC(Stream input, Stream output, IBufferedCipher cipher, int blockSize,
-                                      IDataPadding padding, Action<int> notifyProgression, int bufferSize)
+                                      IDataPadding padding, Action<int> notifyProgression = null, int bufferSize = 4096)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (cipher == null)
+                throw new ArgumentNullException(nameof(cipher));
+            if (padding == null)
+                throw new ArgumentNullException(nameof(padding));
+
             bool padDone = false;
             int bytesRead;
             byte[] buffer = new byte[bufferSize];
@@ -67,9 +80,19 @@ namespace Byte.Toolkit.Crypto.SymKey
         /// <param name="padding">Padding</param>
         /// <param name="notifyProgression">Notify progression method</param>
         /// <param name="bufferSize">Buffer size</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public static void DecryptCBC(Stream input, Stream output, IBufferedCipher cipher, int blockSize,
-                                      IDataPadding padding, Action<int> notifyProgression, int bufferSize)
+                                      IDataPadding padding, Action<int> notifyProgression = null, int bufferSize = 4096)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (cipher == null)
+                throw new ArgumentNullException(nameof(cipher));
+            if (padding == null)
+                throw new ArgumentNullException(nameof(padding));
+
             byte[] backup = null;
             int bytesRead;
             byte[] buffer = new byte[bufferSize];
