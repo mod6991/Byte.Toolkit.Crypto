@@ -27,8 +27,12 @@ namespace Byte.Toolkit.Crypto.Padding
             byte[] paddedData = new byte[data.Length + paddingLength];
             Array.Copy(data, 0, paddedData, 0, data.Length);
 
-            byte[] rndBytes = RandomHelper.GenerateBytes(paddingLength - 1);
-            Array.Copy(rndBytes, 0, paddedData, data.Length, paddingLength - 1);
+            if (paddingLength > 1)
+            {
+                byte[] rndBytes = RandomHelper.GenerateBytes(paddingLength - 1);
+                Array.Copy(rndBytes, 0, paddedData, data.Length, paddingLength - 1);
+            }
+
             paddedData[paddedData.Length - 1] = (byte)paddingLength;
 
             return paddedData;
