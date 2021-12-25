@@ -15,7 +15,7 @@ namespace Byte.Toolkit.Crypto.Random
         /// <exception cref="ArgumentException"></exception>
         public static byte[] GenerateBytes(int size)
         {
-            if (size < 1)
+            if (size < 0)
                 throw new ArgumentException($"Invalid size {size}", nameof(size));
 
 #if NET6_0_OR_GREATER
