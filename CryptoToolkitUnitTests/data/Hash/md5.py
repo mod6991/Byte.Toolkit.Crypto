@@ -35,6 +35,14 @@ def main():
             hash= md5.digest().hex()
             md5_good.write(f"{hash}\n")
 
+    with open('md5.dat', 'rb') as md5_dat:
+        data = md5_dat.read()
+        md5 = MD5.new(data)
+    
+    with open('md5.dat.txt', 'w') as md5_dat_txt:
+        md5_dat_txt.write(md5.hexdigest())
+    
+
 
 if __name__ == '__main__':
     main()
