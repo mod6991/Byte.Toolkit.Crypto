@@ -10,31 +10,42 @@ namespace CryptoToolkitUnitTests.Hash
 {
     public class MD5Tests
     {
-        [TestCaseSource(nameof(CsvTestSource))]
-        public void Hash(Tuple<string, string> values)
+        [TestCaseSource(nameof(DataSource))]
+        public void Hash(Tuple<byte[], string> values)
         {
-            byte[] data = Base64.Decode(values.Item1);
-            Assert.AreEqual(values.Item2, Hex.Encode(MD5.Hash(data)));
+            byte[] hash = MD5.Hash(values.Item1);
+            Assert.AreEqual(values.Item2, Hex.Encode(hash));
         }
 
-        static IEnumerable<Tuple<string, string>> CsvTestSource()
+        [Test]
+        public void HashNull()
         {
-            using (FileStream fs = new FileStream(@"data/md5.csv", FileMode.Open, FileAccess.Read))
+            Assert.Throws<ArgumentNullException>(() =>
             {
-                using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                {
-                    sr.ReadLine(); // header
+                Hex.Encode(null);
+            });
+        }
 
-                    while (!sr.EndOfStream)
+        static IEnumerable<Tuple<byte[], string>> DataSource()
+        {
+            using (FileStream fsDat = StreamHelper.GetFileStreamOpen(@"data\Hash\md5.dat"))
+            {
+                using (FileStream fsTxt = StreamHelper.GetFileStreamOpen(@"data\Hash\md5.txt"))
+                {
+                    using (StreamReader sr = new StreamReader(fsTxt, Encoding.ASCII))
                     {
-                        string line = sr.ReadLine();
-                        if (!string.IsNullOrWhiteSpace(line))
+                        int total = BinaryHelper.ReadInt32(fsDat);
+
+                        for (int i = 0; i < total; i++)
                         {
-                            string[] sp = line.Split(',');
-                            yield return new Tuple<string, string>(sp[0], sp[1]);
+                            string line = sr.ReadLine();
+                            byte[] data = BinaryHelper.ReadLV(fsDat);
+
+                            yield return new Tuple<byte[], string>(data, line);
                         }
                     }
                 }
+
             }
         }
     }

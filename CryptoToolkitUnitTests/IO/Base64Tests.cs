@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -15,41 +15,80 @@ namespace CryptoToolkitUnitTests.IO
             Assert.AreEqual("", Base64.Encode(new byte[] { }));
         }
 
-        [TestCaseSource(nameof(CsvTestSource))]
-        public void Encode(Tuple<string, string> values)
-        {
-            byte[] data = Hex.Decode(values.Item1);
-            Assert.AreEqual(values.Item2, Base64.Encode(data));
-        }
-
         [Test]
         public void DecodeEmpty()
         {
             Assert.AreEqual(new byte[] { }, Base64.Decode(""));
         }
 
-        [TestCaseSource(nameof(CsvTestSource))]
-        public void Decode(Tuple<string, string> values)
+        [TestCaseSource(nameof(DataSource))]
+        public void Encode(Tuple<byte[], string> values)
         {
-            byte[] data = Base64.Decode(values.Item2);
-            Assert.AreEqual(values.Item1, Hex.Encode(data));
+            string encoded = Base64.Encode(values.Item1);
+            Assert.AreEqual(values.Item2, encoded);
         }
 
-        static IEnumerable<Tuple<string, string>> CsvTestSource()
+        [TestCaseSource(nameof(DataSource))]
+        public void Decode(Tuple<byte[], string> values)
         {
-            using (FileStream fs = new FileStream(@"data/hex_base64.csv", FileMode.Open, FileAccess.Read))
-            {
-                using (StreamReader sr = new StreamReader(fs, Encoding.UTF8))
-                {
-                    sr.ReadLine(); // header
+            byte[] decoded = Base64.Decode(values.Item2);
+            Assert.AreEqual(values.Item1, decoded);
+        }
 
-                    while (!sr.EndOfStream)
+        [Test]
+        [TestCase("TWF")]
+        public void DecodeBadLength(string encoded)
+        {
+            Assert.Throws<Base64DecodeException>(() =>
+            {
+                Base64.Decode(encoded);
+            });
+        }
+
+        [Test]
+        [TestCase("TWF(")]
+        public void DecodeBadChars(string encoded)
+        {
+            Assert.Throws<Base64DecodeException>(() =>
+            {
+                Base64.Decode(encoded);
+            });
+        }
+
+        [Test]
+        public void EncodeNull()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                Base64.Encode(null);
+            });
+        }
+
+        [Test]
+        public void DecodeNull()
+        {
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                Base64.Decode(null);
+            });
+        }
+
+        static IEnumerable<Tuple<byte[], string>> DataSource()
+        {
+            using (FileStream fsDat = StreamHelper.GetFileStreamOpen(@"data\IO\b64.dat"))
+            {
+                using (FileStream fsTxt = StreamHelper.GetFileStreamOpen(@"data\IO\b64.txt"))
+                {
+                    using (StreamReader sr = new StreamReader(fsTxt, Encoding.ASCII))
                     {
-                        string line = sr.ReadLine();
-                        if (!string.IsNullOrWhiteSpace(line))
+                        int total = BinaryHelper.ReadInt32(fsDat);
+
+                        for (int i = 0; i < total; i++)
                         {
-                            string[] sp = line.Split(',');
-                            yield return new Tuple<string, string>(sp[0], sp[1]);
+                            string line = sr.ReadLine();
+                            byte[] data = BinaryHelper.ReadLV(fsDat);
+
+                            yield return new Tuple<byte[], string>(data, line);
                         }
                     }
                 }
