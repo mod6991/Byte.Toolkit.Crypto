@@ -22,15 +22,13 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('b64.dat', 'wb') as b64_dat,\
-         open('b64.txt', 'w') as b64_txt:
-
+    with open('b64.dat', 'wb') as b64_dat:
         write_l(b64_dat, 100)
 
         for i in range(1, 101):
             data = get_random_bytes(i)
             write_lv(b64_dat, data)
-            b64_txt.write(f"{b64encode(data).decode()}\n")
+            write_lv(b64_dat, b64encode(data))
 
 
 if __name__ == '__main__':

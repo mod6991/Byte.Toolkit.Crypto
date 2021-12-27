@@ -75,24 +75,17 @@ namespace CryptoToolkitUnitTests.IO
 
         static IEnumerable<Tuple<byte[], string>> DataSource()
         {
-            using(FileStream fsDat = StreamHelper.GetFileStreamOpen(@"data\IO\hex.dat"))
+            using (FileStream fs = StreamHelper.GetFileStreamOpen(@"data\IO\hex.dat"))
             {
-                using (FileStream fsTxt = StreamHelper.GetFileStreamOpen(@"data\IO\hex.txt"))
+                int total = BinaryHelper.ReadInt32(fs);
+
+                for (int i = 0; i < total; i++)
                 {
-                    using(StreamReader sr = new StreamReader(fsTxt, Encoding.ASCII))
-                    {
-                        int total = BinaryHelper.ReadInt32(fsDat);
+                    byte[] data = BinaryHelper.ReadLV(fs);
+                    byte[] hexData = BinaryHelper.ReadLV(fs);
 
-                        for (int i = 0; i < total; i++)
-                        {
-                            string line = sr.ReadLine();
-                            byte[] data = BinaryHelper.ReadLV(fsDat);
-
-                            yield return new Tuple<byte[], string>(data, line);
-                        }
-                    }
+                    yield return new Tuple<byte[], string>(data, Encoding.ASCII.GetString(hexData));
                 }
-
             }
         }
     }

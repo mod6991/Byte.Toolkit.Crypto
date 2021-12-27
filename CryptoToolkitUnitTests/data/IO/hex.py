@@ -21,15 +21,13 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('hex.dat', 'wb') as hex_dat,\
-         open('hex.txt', 'w') as hex_txt:
-
+    with open('hex.dat', 'wb') as hex_dat:
         write_l(hex_dat, 100)
 
         for i in range(1, 101):
             data = get_random_bytes(i)
             write_lv(hex_dat, data)
-            hex_txt.write(f"{data.hex()}\n")
+            write_lv(hex_dat, data.hex().encode('ascii'))
 
 
 if __name__ == '__main__':
