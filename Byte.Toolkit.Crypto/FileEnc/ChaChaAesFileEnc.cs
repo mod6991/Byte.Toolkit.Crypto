@@ -377,7 +377,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
                 else
                 {
-                    byte[] unpadData = padding.UnPad(backup, AES.BLOCK_SIZE);
+                    byte[] unpadData = padding.Unpad(backup, AES.BLOCK_SIZE);
                     output.Write(unpadData, 0, unpadData.Length);
                 }
 

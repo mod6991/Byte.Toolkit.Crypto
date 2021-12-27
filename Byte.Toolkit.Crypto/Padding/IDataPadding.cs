@@ -21,7 +21,7 @@ namespace Byte.Toolkit.Crypto.Padding
         /// <param name="paddedData">Data to unpad</param>
         /// <param name="blockSize">Block size</param>
         /// <returns>Unpadded data</returns>
-        byte[] UnPad(byte[] paddedData, int blockSize);
+        byte[] Unpad(byte[] paddedData, int blockSize);
     }
 
     public sealed class PaddingException : Exception

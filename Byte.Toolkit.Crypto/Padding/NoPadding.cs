@@ -22,7 +22,7 @@
         /// <param name="paddedData">Data</param>
         /// <param name="blockSize">Block size</param>
         /// <returns>Original data</returns>
-        public byte[] UnPad(byte[] paddedData, int blockSize)
+        public byte[] Unpad(byte[] paddedData, int blockSize)
         {
             return paddedData;
         }

@@ -47,7 +47,7 @@ namespace Byte.Toolkit.Crypto.Padding
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="PaddingException"></exception>
-        public byte[] UnPad(byte[] paddedData, int blockSize)
+        public byte[] Unpad(byte[] paddedData, int blockSize)
         {
             if (paddedData == null)
                 throw new ArgumentNullException(nameof(paddedData));

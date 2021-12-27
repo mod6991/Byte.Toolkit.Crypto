@@ -122,7 +122,7 @@ namespace Byte.Toolkit.Crypto.SymKey
                         byte[] smallBuffer = new byte[bytesRead];
                         Array.Copy(buffer, 0, smallBuffer, 0, bytesRead);
                         cipher.ProcessBytes(smallBuffer, dec, 0);
-                        byte[] unpadData = padding.UnPad(dec, blockSize);
+                        byte[] unpadData = padding.Unpad(dec, blockSize);
                         output.Write(unpadData, 0, unpadData.Length);
                     }
 
@@ -133,7 +133,7 @@ namespace Byte.Toolkit.Crypto.SymKey
                 {
                     if (backup != null)
                     {
-                        byte[] unpadData = padding.UnPad(backup, blockSize);
+                        byte[] unpadData = padding.Unpad(backup, blockSize);
                         output.Write(unpadData, 0, unpadData.Length);
                     }
                 }
