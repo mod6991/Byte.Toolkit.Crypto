@@ -14,6 +14,7 @@ namespace Byte.Toolkit.Crypto.Hash
         /// Hash data with SHA3
         /// </summary>
         /// <param name="data">Data to hash</param>
+        /// <param name="bitLength">SHA3 bit length</param>
         /// <returns>SHA3 hash</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public static byte[] Hash(byte[] data, int bitLength = 512)
@@ -34,6 +35,7 @@ namespace Byte.Toolkit.Crypto.Hash
         /// Hash data from stream with SHA3
         /// </summary>
         /// <param name="input">Input stream</param>
+        /// <param name="bitLength">SHA3 bit length</param>
         /// <param name="bufferSize">Buffer size</param>
         /// <returns>SHA3 hash</returns>
         /// <exception cref="ArgumentNullException"></exception>
@@ -65,17 +67,18 @@ namespace Byte.Toolkit.Crypto.Hash
         /// Hash file with SHA3
         /// </summary>
         /// <param name="inputFile">File to hash</param>
+        /// <param name="bitLength">SHA3 bit length</param>
         /// <param name="bufferSize">Buffer size</param>
         /// <returns>SHA3 hash</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static byte[] Hash(string inputFile, int bufferSize = 4096)
+        public static byte[] Hash(string inputFile, int bitLength = 512, int bufferSize = 4096)
         {
             if (inputFile == null)
                 throw new ArgumentNullException(nameof(inputFile));
 
             using (FileStream fs = StreamHelper.GetFileStreamOpen(inputFile))
             {
-                return Hash(fs, bufferSize);
+                return Hash(fs, bitLength, bufferSize);
             }
         }
     }
