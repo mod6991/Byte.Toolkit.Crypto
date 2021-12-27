@@ -22,17 +22,14 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('ansix923_data.dat', 'wb') as ansix923_data_dat,\
-         open('ansix923_padded.dat', 'wb') as ansix923_padded_dat:
-
+    with open('ansix923.dat', 'wb') as ansix923_data_dat:
         write_l(ansix923_data_dat, 100)
-        write_l(ansix923_padded_dat, 100)
 
         for i in range(100):
             data = get_random_bytes(i)
             write_lv(ansix923_data_dat, data)
             padded = pad(data, 16, 'x923')
-            write_lv(ansix923_padded_dat, padded)
+            write_lv(ansix923_data_dat, padded)
 
 
 if __name__ == '__main__':

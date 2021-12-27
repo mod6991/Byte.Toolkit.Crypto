@@ -22,17 +22,14 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('pkcs7_data.dat', 'wb') as pkcs7_data_dat,\
-         open('pkcs7_padded.dat', 'wb') as pkcs7_padded_dat:
-
+    with open('pkcs7.dat', 'wb') as pkcs7_data_dat:
         write_l(pkcs7_data_dat, 100)
-        write_l(pkcs7_padded_dat, 100)
 
         for i in range(100):
             data = get_random_bytes(i)
             write_lv(pkcs7_data_dat, data)
             padded = pad(data, 16, 'pkcs7')
-            write_lv(pkcs7_padded_dat, padded)
+            write_lv(pkcs7_data_dat, padded)
 
 
 if __name__ == '__main__':

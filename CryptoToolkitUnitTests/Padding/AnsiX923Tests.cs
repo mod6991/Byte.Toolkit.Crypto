@@ -70,20 +70,16 @@ namespace CryptoToolkitUnitTests.Padding
 
         static IEnumerable<Tuple<byte[], byte[]>> DataSource()
         {
-            using (FileStream fsDat = StreamHelper.GetFileStreamOpen(@"data\Padding\ansix923_data.dat"))
+            using (FileStream fs = StreamHelper.GetFileStreamOpen(@"data\Padding\ansix923.dat"))
             {
-                using (FileStream fsPadded = StreamHelper.GetFileStreamOpen(@"data\Padding\ansix923_padded.dat"))
+                int total = BinaryHelper.ReadInt32(fs);
+
+                for (int i = 0; i < total; i++)
                 {
-                    int total = BinaryHelper.ReadInt32(fsDat);
-                    BinaryHelper.ReadInt32(fsPadded);
+                    byte[] data = BinaryHelper.ReadLV(fs);
+                    byte[] padded = BinaryHelper.ReadLV(fs);
 
-                    for (int i = 0; i < total; i++)
-                    {
-                        byte[] data = BinaryHelper.ReadLV(fsDat);
-                        byte[] padded = BinaryHelper.ReadLV(fsPadded);
-
-                        yield return new Tuple<byte[], byte[]>(data, padded);
-                    }
+                    yield return new Tuple<byte[], byte[]>(data, padded);
                 }
             }
         }

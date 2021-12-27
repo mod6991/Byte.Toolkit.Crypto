@@ -22,17 +22,14 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('iso7816_data.dat', 'wb') as iso7816_data_dat,\
-         open('iso7816_padded.dat', 'wb') as iso7816_padded_dat:
-
+    with open('iso7816.dat', 'wb') as iso7816_data_dat:
         write_l(iso7816_data_dat, 100)
-        write_l(iso7816_padded_dat, 100)
 
         for i in range(100):
             data = get_random_bytes(i)
             write_lv(iso7816_data_dat, data)
             padded = pad(data, 16, 'iso7816')
-            write_lv(iso7816_padded_dat, padded)
+            write_lv(iso7816_data_dat, padded)
 
 
 if __name__ == '__main__':
