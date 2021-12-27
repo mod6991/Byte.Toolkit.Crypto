@@ -35,7 +35,6 @@
     <Folder Include="data\Padding\" />
     <Folder Include="FileEnc\" />
     <Folder Include="KDF\" />
-    <Folder Include="SymKey\" />
   </ItemGroup>
 
 </Project>
