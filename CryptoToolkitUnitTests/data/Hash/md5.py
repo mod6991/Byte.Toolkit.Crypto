@@ -43,6 +43,5 @@ def main():
         md5_dat_txt.write(md5.hexdigest())
     
 
-
 if __name__ == '__main__':
     main()

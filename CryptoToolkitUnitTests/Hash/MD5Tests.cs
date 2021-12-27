@@ -10,9 +10,6 @@ namespace CryptoToolkitUnitTests.Hash
 {
     public class MD5Tests
     {
-        //+ hash file
-        //+ hash stream
-
         [TestCaseSource(nameof(DataSource))]
         public void Hash(Tuple<byte[], string> values)
         {
