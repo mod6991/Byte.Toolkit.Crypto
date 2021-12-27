@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using Byte.Toolkit.Crypto.Hash;
 using Byte.Toolkit.Crypto.IO;
 using Byte.Toolkit.Crypto.Padding;
 using NUnit.Framework;
