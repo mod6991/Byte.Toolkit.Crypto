@@ -22,9 +22,7 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open(r'sha3.dat', 'wb') as sha3_dat,\
-         open(r'sha3.txt', 'w') as sha3_good:
-        
+    with open('sha3.dat', 'wb') as sha3_dat:
         write_l(sha3_dat, 100)
         
         for i in range(100):
@@ -32,8 +30,8 @@ def main():
             write_lv(sha3_dat, data)
 
             sha3 = SHA3_512.new(data)
-            hash= sha3.digest().hex()
-            sha3_good.write(f"{hash}\n")
+            hash = sha3.digest().hex()
+            write_lv(sha3_dat, hash.encode('ascii'))
 
     with open('sha3.dat', 'rb') as sha3_dat:
         data = sha3_dat.read()

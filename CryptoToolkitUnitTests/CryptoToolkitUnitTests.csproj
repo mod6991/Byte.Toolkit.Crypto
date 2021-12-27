@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="data\Hash\" />
     <Folder Include="data\IO\" />
     <Folder Include="data\Padding\" />
     <Folder Include="FileEnc\" />

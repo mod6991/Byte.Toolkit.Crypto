@@ -22,9 +22,7 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open(r'md5.dat', 'wb') as md5_dat,\
-         open(r'md5.txt', 'w') as md5_good:
-        
+    with open('md5.dat', 'wb') as md5_dat:
         write_l(md5_dat, 100)
         
         for i in range(100):
@@ -32,8 +30,8 @@ def main():
             write_lv(md5_dat, data)
 
             md5 = MD5.new(data)
-            hash= md5.digest().hex()
-            md5_good.write(f"{hash}\n")
+            hash = md5.digest().hex()
+            write_lv(md5_dat, hash.encode('ascii'))
 
     with open('md5.dat', 'rb') as md5_dat:
         data = md5_dat.read()
