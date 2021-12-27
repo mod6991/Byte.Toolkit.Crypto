@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using Byte.Toolkit.Crypto.IO;
 using Byte.Toolkit.Crypto.Padding;
 using NUnit.Framework;
