@@ -22,11 +22,8 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('tripledes_data.dat', 'wb') as tripledes_data_dat,\
-         open('tripledes_enc.dat', 'wb') as tripledes_enc_dat:
-
+    with open('tripledes.dat', 'wb') as tripledes_data_dat:
         write_l(tripledes_data_dat, 50)
-        write_l(tripledes_enc_dat, 50)
 
         for i in range(1, 101):
             key = get_random_bytes(24)
@@ -38,8 +35,7 @@ def main():
 
             cipher = DES3.new(key, DES3.MODE_CBC, iv)
             enc = cipher.encrypt(data)
-
-            write_lv(tripledes_enc_dat, enc)
+            write_lv(tripledes_data_dat, enc)
 
 
 if __name__ == '__main__':

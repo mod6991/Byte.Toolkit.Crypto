@@ -22,11 +22,8 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('chacha20rfc7539_data.dat', 'wb') as chacha20rfc_data_dat,\
-         open('chacha20rfc7539_enc.dat', 'wb') as chacha20rfc_enc_dat:
-
+    with open('chacha20rfc7539.dat', 'wb') as chacha20rfc_data_dat:
         write_l(chacha20rfc_data_dat, 50)
-        write_l(chacha20rfc_enc_dat, 50)
 
         for i in range(1, 101):
             key = get_random_bytes(32)
@@ -38,8 +35,7 @@ def main():
 
             cipher = ChaCha20.new(key=key, nonce=iv)
             enc = cipher.encrypt(data)
-
-            write_lv(chacha20rfc_enc_dat, enc)
+            write_lv(chacha20rfc_data_dat, enc)
 
 
 if __name__ == '__main__':

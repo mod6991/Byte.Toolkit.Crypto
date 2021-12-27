@@ -22,11 +22,8 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('aes_data.dat', 'wb') as aes_data_dat,\
-         open('aes_enc.dat', 'wb') as aes_enc_dat:
-
+    with open('aes.dat', 'wb') as aes_data_dat:
         write_l(aes_data_dat, 50)
-        write_l(aes_enc_dat, 50)
 
         for i in range(1, 101):
             key = get_random_bytes(32)
@@ -38,8 +35,7 @@ def main():
 
             cipher = AES.new(key, AES.MODE_CBC, iv)
             enc = cipher.encrypt(data)
-
-            write_lv(aes_enc_dat, enc)
+            write_lv(aes_data_dat, enc)
 
 
 if __name__ == '__main__':

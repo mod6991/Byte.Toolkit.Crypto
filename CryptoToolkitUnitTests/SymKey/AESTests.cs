@@ -184,22 +184,18 @@ namespace CryptoToolkitUnitTests.SymKey
 
         static IEnumerable<Tuple<byte[], byte[], byte[], byte[]>> DataSource()
         {
-            using (FileStream fsDat = StreamHelper.GetFileStreamOpen(@"data\SymKey\aes_data.dat"))
+            using (FileStream fs = StreamHelper.GetFileStreamOpen(@"data\SymKey\aes.dat"))
             {
-                using (FileStream fsEnc = StreamHelper.GetFileStreamOpen(@"data\SymKey\aes_enc.dat"))
+                int total = BinaryHelper.ReadInt32(fs);
+
+                for (int i = 0; i < total; i++)
                 {
-                    int total = BinaryHelper.ReadInt32(fsDat);
-                    BinaryHelper.ReadInt32(fsEnc);
+                    byte[] key = BinaryHelper.ReadLV(fs);
+                    byte[] iv = BinaryHelper.ReadLV(fs);
+                    byte[] data = BinaryHelper.ReadLV(fs);
+                    byte[] enc = BinaryHelper.ReadLV(fs);
 
-                    for (int i = 0; i < total; i++)
-                    {
-                        byte[] key = BinaryHelper.ReadLV(fsDat);
-                        byte[] iv = BinaryHelper.ReadLV(fsDat);
-                        byte[] data = BinaryHelper.ReadLV(fsDat);
-                        byte[] enc = BinaryHelper.ReadLV(fsEnc);
-
-                        yield return new Tuple<byte[], byte[], byte[], byte[]>(key, iv, data, enc);
-                    }
+                    yield return new Tuple<byte[], byte[], byte[], byte[]>(key, iv, data, enc);
                 }
             }
         }

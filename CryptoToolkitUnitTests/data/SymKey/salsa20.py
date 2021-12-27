@@ -22,11 +22,8 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('salsa20_data.dat', 'wb') as salsa20_data_dat,\
-         open('salsa20_enc.dat', 'wb') as salsa20_enc_dat:
-
+    with open('salsa20.dat', 'wb') as salsa20_data_dat:
         write_l(salsa20_data_dat, 50)
-        write_l(salsa20_enc_dat, 50)
 
         for i in range(1, 101):
             key = get_random_bytes(32)
@@ -38,8 +35,7 @@ def main():
 
             cipher = Salsa20.new(key=key, nonce=iv)
             enc = cipher.encrypt(data)
-
-            write_lv(salsa20_enc_dat, enc)
+            write_lv(salsa20_data_dat, enc)
 
 
 if __name__ == '__main__':

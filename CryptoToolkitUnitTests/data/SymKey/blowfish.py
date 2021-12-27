@@ -22,11 +22,8 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('blowfish_data.dat', 'wb') as blowfish_data_dat,\
-         open('blowfish_enc.dat', 'wb') as blowfish_enc_dat:
-
+    with open('blowfish.dat', 'wb') as blowfish_data_dat:
         write_l(blowfish_data_dat, 50)
-        write_l(blowfish_enc_dat, 50)
 
         for i in range(1, 101):
             key = get_random_bytes(56)
@@ -38,8 +35,7 @@ def main():
 
             cipher = Blowfish.new(key, Blowfish.MODE_CBC, iv)
             enc = cipher.encrypt(data)
-
-            write_lv(blowfish_enc_dat, enc)
+            write_lv(blowfish_data_dat, enc)
 
 
 if __name__ == '__main__':

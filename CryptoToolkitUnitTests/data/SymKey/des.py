@@ -22,11 +22,8 @@ def write_l(stream: BinaryIO, value: int):
 
 
 def main():
-    with open('des_data.dat', 'wb') as des_data_dat,\
-         open('des_enc.dat', 'wb') as des_enc_dat:
-
+    with open('des.dat', 'wb') as des_data_dat:
         write_l(des_data_dat, 50)
-        write_l(des_enc_dat, 50)
 
         for i in range(1, 101):
             key = get_random_bytes(8)
@@ -38,8 +35,7 @@ def main():
 
             cipher = DES.new(key, DES.MODE_CBC, iv)
             enc = cipher.encrypt(data)
-
-            write_lv(des_enc_dat, enc)
+            write_lv(des_data_dat, enc)
 
 
 if __name__ == '__main__':
