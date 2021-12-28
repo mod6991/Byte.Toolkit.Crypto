@@ -32,8 +32,9 @@
   <ItemGroup>
     <Folder Include="data\IO\" />
     <Folder Include="data\KDF\" />
+    <Folder Include="data\FileEnc\" />
+    <Folder Include="data\PubKey\" />
     <Folder Include="data\Padding\" />
-    <Folder Include="FileEnc\" />
   </ItemGroup>
 
 </Project>
