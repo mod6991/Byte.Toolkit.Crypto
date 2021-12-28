@@ -31,9 +31,9 @@
 
   <ItemGroup>
     <Folder Include="data\IO\" />
+    <Folder Include="data\KDF\" />
     <Folder Include="data\Padding\" />
     <Folder Include="FileEnc\" />
-    <Folder Include="KDF\" />
   </ItemGroup>
 
 </Project>
