@@ -304,25 +304,22 @@ namespace Byte.Toolkit.Crypto.FileEnc
             {
                 bytesRead = input.Read(buffer, 0, BUFFER_SIZE);
 
-                if (bytesRead > 0)
+                if (bytesRead == BUFFER_SIZE)
                 {
-                    if (bytesRead == BUFFER_SIZE)
-                    {
-                        GenPadXorEncryptAndWrite(output, bytesRead, buffer, chachaKey, chachaNonce, aesKey, aesIv);
-                    }
-                    else
-                    {
-                        byte[] smallBuffer = new byte[bytesRead];
-                        Array.Copy(buffer, 0, smallBuffer, 0, bytesRead);
-                        byte[] padData = padding.Pad(smallBuffer, AES.BLOCK_SIZE);
-                        padDone = true;
-
-                        GenPadXorEncryptAndWrite(output, padData.Length, padData, chachaKey, chachaNonce, aesKey, aesIv);
-                    }
-
-                    if (notifyProgression != null)
-                        notifyProgression(bytesRead);
+                    GenPadXorEncryptAndWrite(output, bytesRead, buffer, chachaKey, chachaNonce, aesKey, aesIv);
                 }
+                else if (bytesRead > 0)
+                {
+                    byte[] smallBuffer = new byte[bytesRead];
+                    Array.Copy(buffer, 0, smallBuffer, 0, bytesRead);
+                    byte[] padData = padding.Pad(smallBuffer, AES.BLOCK_SIZE);
+                    padDone = true;
+
+                    GenPadXorEncryptAndWrite(output, padData.Length, padData, chachaKey, chachaNonce, aesKey, aesIv);
+                }
+
+                if (notifyProgression != null)
+                    notifyProgression(bytesRead);
             } while (bytesRead == BUFFER_SIZE);
 
             if (!padDone)
