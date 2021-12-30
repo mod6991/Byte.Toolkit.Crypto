@@ -266,8 +266,8 @@ namespace CryptoToolkitUnitTests.FileEnc
                     Assert.AreEqual(16, aesSalt.Length);
                     Assert.AreEqual(16, aesIv.Length);
 
-                    byte[] chachaKey = PBKDF2.GenerateKeyFromPassword(32, "test1234abc", chachaSalt);
-                    byte[] aesKey = PBKDF2.GenerateKeyFromPassword(32, "test1234abc", aesSalt);
+                    byte[] chachaKey = PBKDF2.GenerateKeyFromPassword(32, "test1234abc", chachaSalt, 60000);
+                    byte[] aesKey = PBKDF2.GenerateKeyFromPassword(32, "test1234abc", aesSalt, 60000);
 
                     byte[] enc;
                     using (MemoryStream msData = new MemoryStream())

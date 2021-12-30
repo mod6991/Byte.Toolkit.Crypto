@@ -82,7 +82,7 @@ def encrypt_pass_stream(input_stream: BinaryIO,
                         output_stream: BinaryIO,
                         password: str) -> None:
     salt = get_random_bytes(16)
-    key = PBKDF2(password, salt, 32, count=10000, hmac_hash_module=SHA1)
+    key = PBKDF2(password, salt, 32, count=60000, hmac_hash_module=SHA1)
     iv = get_random_bytes(16)
 
     output_stream.write(b'AENCP!')

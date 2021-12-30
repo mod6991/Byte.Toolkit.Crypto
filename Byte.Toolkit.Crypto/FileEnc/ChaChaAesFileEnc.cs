@@ -113,11 +113,11 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 throw new ArgumentNullException(nameof(password));
 
             byte[] chachaSalt = RandomHelper.GenerateBytes(SALT_SIZE);
-            byte[] chachaKey = PBKDF2.GenerateKeyFromPassword(ChaCha20Rfc7539.KEY_SIZE, password, chachaSalt);
+            byte[] chachaKey = PBKDF2.GenerateKeyFromPassword(ChaCha20Rfc7539.KEY_SIZE, password, chachaSalt, 60000);
             byte[] chachaNonce = RandomHelper.GenerateBytes(ChaCha20Rfc7539.NONCE_SIZE);
 
             byte[] aesSalt = RandomHelper.GenerateBytes(SALT_SIZE);
-            byte[] aesKey = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, aesSalt);
+            byte[] aesKey = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, aesSalt, 60000);
             byte[] aesIv = RandomHelper.GenerateBytes(AES.IV_SIZE);
 
             BinaryHelper.Write(output, PASS_HEADER, Encoding.ASCII);
@@ -250,8 +250,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
             if (notifyProgression != null)
                 notifyProgression(PASS_HEADER.Length + 1 + 4 * sizeof(int) + chachaSalt.Length + chachaNonce.Length + aesSalt.Length + aesIv.Length);
 
-            byte[] chachaKey = PBKDF2.GenerateKeyFromPassword(ChaCha20Rfc7539.KEY_SIZE, password, chachaSalt);
-            byte[] aesKey = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, aesSalt);
+            byte[] chachaKey = PBKDF2.GenerateKeyFromPassword(ChaCha20Rfc7539.KEY_SIZE, password, chachaSalt, 60000);
+            byte[] aesKey = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, aesSalt, 60000);
 
             SymDecryptAndUnpad(input, output, chachaKey, chachaNonce, aesKey, aesIv, notifyProgression);
         }

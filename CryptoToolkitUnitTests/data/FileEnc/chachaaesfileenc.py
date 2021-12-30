@@ -86,11 +86,11 @@ def encrypt_pass_stream(input_stream: BinaryIO,
                         output_stream: BinaryIO,
                         password: str) -> None:
     chacha_salt = get_random_bytes(16)
-    chacha_key = PBKDF2(password, chacha_salt, 32, count=10000, hmac_hash_module=SHA1)
+    chacha_key = PBKDF2(password, chacha_salt, 32, count=60000, hmac_hash_module=SHA1)
     chacha_nonce = get_random_bytes(12)
 
     aes_salt = get_random_bytes(16)
-    aes_key = PBKDF2(password, aes_salt, 32, count=10000, hmac_hash_module=SHA1)
+    aes_key = PBKDF2(password, aes_salt, 32, count=60000, hmac_hash_module=SHA1)
     aes_iv = get_random_bytes(16)
 
     output_stream.write(b'CAENCP!')

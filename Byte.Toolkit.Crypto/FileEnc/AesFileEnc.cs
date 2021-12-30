@@ -109,7 +109,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 throw new ArgumentNullException(nameof(password));
 
             byte[] salt = RandomHelper.GenerateBytes(SALT_SIZE);
-            byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt);
+            byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt, 60000);
             byte[] iv = RandomHelper.GenerateBytes(AES.IV_SIZE);
 
             BinaryHelper.Write(output, PASS_HEADER, Encoding.ASCII);
@@ -236,7 +236,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
             if (notifyProgression != null)
                 notifyProgression(PASS_HEADER.Length + 1 + 2 * sizeof(int) + salt.Length + iv.Length);
 
-            byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt);
+            byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt, 60000);
 
             AES.DecryptCBC(input, output, key, iv, new Pkcs7Padding(), notifyProgression);
         }

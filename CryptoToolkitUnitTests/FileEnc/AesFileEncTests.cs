@@ -240,7 +240,7 @@ namespace CryptoToolkitUnitTests.FileEnc
 
                     Assert.AreEqual(16, salt.Length);
                     Assert.AreEqual(16, iv.Length);
-                    byte[] key = PBKDF2.GenerateKeyFromPassword(32, "test1234abc", salt);
+                    byte[] key = PBKDF2.GenerateKeyFromPassword(32, "test1234abc", salt, 60000);
 
                     byte[] enc;
                     using (MemoryStream msData = new MemoryStream())
