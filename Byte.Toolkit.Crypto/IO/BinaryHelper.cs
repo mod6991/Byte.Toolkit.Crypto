@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Byte.Toolkit.Crypto.IO
 {
@@ -48,6 +49,22 @@ namespace Byte.Toolkit.Crypto.IO
                 throw new ArgumentNullException(nameof(value));
 
             stream.Write(value, 0, value.Length);
+        }
+
+        /// <summary>
+        /// Asynchronously write bytes to stream
+        /// </summary>
+        /// <param name="stream">Output stream</param>
+        /// <param name="value">Bytes value</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task WriteAsync(Stream stream, byte[] value)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
+            await stream.WriteAsync(value, 0, value.Length).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -223,6 +240,23 @@ namespace Byte.Toolkit.Crypto.IO
         }
 
         /// <summary>
+        /// Asynchronously write a Length-Value
+        /// </summary>
+        /// <param name="stream">Output stream</param>
+        /// <param name="value">Value</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task WriteLVAsync(Stream stream, byte[] value)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+            if (value == null)
+                throw new ArgumentNullException(nameof(value));
+
+            Write(stream, value.Length);
+            await WriteAsync(stream, value).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Read byte from stream
         /// </summary>
         /// <param name="stream">Input stream</param>
@@ -254,6 +288,25 @@ namespace Byte.Toolkit.Crypto.IO
             byte[] buffer = new byte[nbBytes];
 
             if (stream.Read(buffer, 0, nbBytes) != nbBytes)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return buffer;
+        }
+
+        /// <summary>
+        /// Asynchronously read bytes from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <param name="nbBytes">Number of bytes to read</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<byte[]> ReadBytesAsync(Stream stream, int nbBytes)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[nbBytes];
+
+            if (await stream.ReadAsync(buffer, 0, nbBytes).ConfigureAwait(false) != nbBytes)
                 throw new IOException("Incorrect number of bytes returned");
 
             return buffer;
@@ -433,6 +486,20 @@ namespace Byte.Toolkit.Crypto.IO
 
             int valueLength = ReadInt32(stream);
             return ReadBytes(stream, valueLength);
+        }
+
+        /// <summary>
+        /// Asynchronously read a Length-Value
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<byte[]> ReadLVAsync(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            int valueLength = ReadInt32(stream);
+            return await ReadBytesAsync(stream, valueLength).ConfigureAwait(false);
         }
     }
 }
