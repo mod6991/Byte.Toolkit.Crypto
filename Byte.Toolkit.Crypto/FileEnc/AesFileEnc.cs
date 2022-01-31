@@ -22,6 +22,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
         private const string PASS_HEADER = "AENCP!";
         private const int SALT_SIZE = 16;
 
+        #region Encrypt with key
+
         /// <summary>
         /// Encrypt with AES-256 with a RSA key
         /// </summary>
@@ -162,6 +164,10 @@ namespace Byte.Toolkit.Crypto.FileEnc
             }
         }
 
+        #endregion
+
+        #region Encrypt with password
+
         /// <summary>
         /// Encrypt with AES-256 with a password
         /// </summary>
@@ -271,6 +277,10 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        #endregion
+
+        #region Decrypt with key
 
         /// <summary>
         /// Decrypt with AES-256 with a RSA key
@@ -400,6 +410,10 @@ namespace Byte.Toolkit.Crypto.FileEnc
             }
         }
 
+        #endregion
+
+        #region Decrypt with password
+
         /// <summary>
         /// Decrypt with AES-256 with a password
         /// </summary>
@@ -513,5 +527,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        #endregion
     }
 }

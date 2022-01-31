@@ -22,6 +22,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
         private const string PASS_HEADER = "CAENCP!";
         private const int SALT_SIZE = 16;
 
+        #region Encrypt with key
+
         /// <summary>
         /// Encrypt with ChaCha20 and AES-256 with a RSA key
         /// </summary>
@@ -170,6 +172,10 @@ namespace Byte.Toolkit.Crypto.FileEnc
             }
         }
 
+        #endregion
+
+        #region Encrypt with password
+
         /// <summary>
         /// Encrypt with ChaCha20 and AES-256 with a password
         /// </summary>
@@ -291,6 +297,10 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        #endregion
+
+        #region Decrypt with key
 
         /// <summary>
         /// Decrypt with ChaCha20 and AES-256 with a RSA key
@@ -424,6 +434,10 @@ namespace Byte.Toolkit.Crypto.FileEnc
             }
         }
 
+        #endregion
+
+        #region Decrypt with password
+
         /// <summary>
         /// Decrypt with ChaCha20 and AES-256 with a password
         /// </summary>
@@ -543,6 +557,10 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        #endregion
+
+        #region Encrypt/Decrypt and Pad/Unpad
 
         /// <summary>
         /// Encrypt with ChaCha20 and AES and pad data with Pkcs7
@@ -742,6 +760,10 @@ namespace Byte.Toolkit.Crypto.FileEnc
             } while (d1.Length > 0);
         }
 
+        #endregion
+
+        #region Double encryption pad XOR
+
         /// <summary>
         /// Generate a random pad, XOR data with pad, encrypt pad with ChaCha20 and encrypt XOR result with AES-256
         /// </summary>
@@ -791,5 +813,7 @@ namespace Byte.Toolkit.Crypto.FileEnc
             await BinaryHelper.WriteLVAsync(output, d1).ConfigureAwait(false);
             await BinaryHelper.WriteLVAsync(output, d2).ConfigureAwait(false);
         }
+
+        #endregion
     }
 }
