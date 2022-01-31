@@ -21,6 +21,8 @@ namespace Byte.Toolkit.Crypto.IO
         public const int SIZEOF_FLOAT = sizeof(float);
         public const int SIZEOF_DOUBLE = sizeof(double);
 
+        #region Byte
+
         /// <summary>
         /// Write byte to stream
         /// </summary>
@@ -48,6 +50,46 @@ namespace Byte.Toolkit.Crypto.IO
 
             await stream.WriteAsync(new byte[] { value }, 0, SIZEOF_BYTE).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Read byte from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static byte ReadByte(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_BYTE];
+
+            if (stream.Read(buffer, 0, SIZEOF_BYTE) != SIZEOF_BYTE)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return buffer[0];
+        }
+
+        /// <summary>
+        /// Asynchronously read byte from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<byte> ReadByteAsync(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_BYTE];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_BYTE).ConfigureAwait(false) != SIZEOF_BYTE)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return buffer[0];
+        }
+
+        #endregion
+
+        #region Bytes
 
         /// <summary>
         /// Write bytes to stream
@@ -82,6 +124,48 @@ namespace Byte.Toolkit.Crypto.IO
         }
 
         /// <summary>
+        /// Read bytes from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <param name="nbBytes">Number of bytes to read</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static byte[] ReadBytes(Stream stream, int nbBytes)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[nbBytes];
+
+            if (stream.Read(buffer, 0, nbBytes) != nbBytes)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return buffer;
+        }
+
+        /// <summary>
+        /// Asynchronously read bytes from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <param name="nbBytes">Number of bytes to read</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<byte[]> ReadBytesAsync(Stream stream, int nbBytes)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[nbBytes];
+
+            if (await stream.ReadAsync(buffer, 0, nbBytes).ConfigureAwait(false) != nbBytes)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return buffer;
+        }
+
+        #endregion
+
+        #region Bool
+
+        /// <summary>
         /// Write bool to stream
         /// </summary>
         /// <param name="stream">Output stream</param>
@@ -110,6 +194,46 @@ namespace Byte.Toolkit.Crypto.IO
             byte[] data = BitConverter.GetBytes(value);
             await stream.WriteAsync(data, 0, SIZEOF_BOOL).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Read bool from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static bool ReadBool(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_BOOL];
+
+            if (stream.Read(buffer, 0, SIZEOF_BOOL) != SIZEOF_BOOL)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToBoolean(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read bool from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<bool> ReadBoolAsync(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_BOOL];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_BOOL).ConfigureAwait(false) != SIZEOF_BOOL)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToBoolean(buffer, 0);
+        }
+
+        #endregion
+
+        #region Int16
 
         /// <summary>
         /// Write Int16 to stream
@@ -142,6 +266,46 @@ namespace Byte.Toolkit.Crypto.IO
         }
 
         /// <summary>
+        /// Read Int16 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static Int16 ReadInt16(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_INT16];
+
+            if (stream.Read(buffer, 0, SIZEOF_INT16) != SIZEOF_INT16)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToInt16(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read Int16 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<Int16> ReadInt16Async(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_INT16];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_INT16).ConfigureAwait(false) != SIZEOF_INT16)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToInt16(buffer, 0);
+        }
+
+        #endregion
+
+        #region UInt16
+
+        /// <summary>
         /// Write UInt16 to stream
         /// </summary>
         /// <param name="stream">Output stream</param>
@@ -170,6 +334,46 @@ namespace Byte.Toolkit.Crypto.IO
             byte[] data = BitConverter.GetBytes(value);
             await stream.WriteAsync(data, 0, SIZEOF_UINT16).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Read UInt16 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static UInt16 ReadUInt16(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_UINT16];
+
+            if (stream.Read(buffer, 0, SIZEOF_UINT16) != SIZEOF_UINT16)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToUInt16(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read UInt16 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<UInt16> ReadUInt16Async(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_UINT16];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_UINT16).ConfigureAwait(false) != SIZEOF_UINT16)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToUInt16(buffer, 0);
+        }
+
+        #endregion
+
+        #region Int32
 
         /// <summary>
         /// Write Int32 to stream
@@ -202,6 +406,46 @@ namespace Byte.Toolkit.Crypto.IO
         }
 
         /// <summary>
+        /// Read Int32 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static Int32 ReadInt32(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_INT32];
+
+            if (stream.Read(buffer, 0, SIZEOF_INT32) != SIZEOF_INT32)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToInt32(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read Int32 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<Int32> ReadInt32Async(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_INT32];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_INT32).ConfigureAwait(false) != SIZEOF_INT32)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToInt32(buffer, 0);
+        }
+
+        #endregion
+
+        #region UInt32
+
+        /// <summary>
         /// Write UInt32 to stream
         /// </summary>
         /// <param name="stream">Output stream</param>
@@ -230,6 +474,46 @@ namespace Byte.Toolkit.Crypto.IO
             byte[] data = BitConverter.GetBytes(value);
             await stream.WriteAsync(data, 0, SIZEOF_UINT32).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Read UInt32 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static UInt32 ReadUInt32(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_UINT32];
+
+            if (stream.Read(buffer, 0, SIZEOF_UINT32) != SIZEOF_UINT32)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToUInt32(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read UInt32 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<UInt32> ReadUInt32Async(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_UINT32];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_UINT32).ConfigureAwait(false) != SIZEOF_UINT32)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToUInt32(buffer, 0);
+        }
+
+        #endregion
+
+        #region Int64
 
         /// <summary>
         /// Write Int64 to stream
@@ -262,6 +546,46 @@ namespace Byte.Toolkit.Crypto.IO
         }
 
         /// <summary>
+        /// Read Int64 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static Int64 ReadInt64(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_INT64];
+
+            if (stream.Read(buffer, 0, SIZEOF_INT64) != SIZEOF_INT64)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToInt64(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read Int64 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<Int64> ReadInt64Async(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_INT64];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_INT64).ConfigureAwait(false) != SIZEOF_INT64)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToInt64(buffer, 0);
+        }
+
+        #endregion
+
+        #region UInt64
+
+        /// <summary>
         /// Write UInt64 to stream
         /// </summary>
         /// <param name="stream">Output stream</param>
@@ -290,6 +614,46 @@ namespace Byte.Toolkit.Crypto.IO
             byte[] data = BitConverter.GetBytes(value);
             await stream.WriteAsync(data, 0, SIZEOF_UINT64).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Read UInt64 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static UInt64 ReadUInt64(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_UINT64];
+
+            if (stream.Read(buffer, 0, SIZEOF_UINT64) != SIZEOF_UINT64)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToUInt64(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read UInt64 from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<UInt64> ReadUInt64Async(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_UINT64];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_UINT64).ConfigureAwait(false) != SIZEOF_UINT64)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToUInt64(buffer, 0);
+        }
+
+        #endregion
+
+        #region float
 
         /// <summary>
         /// Write float to stream
@@ -322,6 +686,46 @@ namespace Byte.Toolkit.Crypto.IO
         }
 
         /// <summary>
+        /// Read float from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static float ReadFloat(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_FLOAT];
+
+            if (stream.Read(buffer, 0, SIZEOF_FLOAT) != SIZEOF_FLOAT)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToSingle(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read float from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<float> ReadFloatAsync(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_FLOAT];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_FLOAT).ConfigureAwait(false) != SIZEOF_FLOAT)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToSingle(buffer, 0);
+        }
+
+        #endregion
+
+        #region double
+
+        /// <summary>
         /// Write double to stream
         /// </summary>
         /// <param name="stream">Output stream</param>
@@ -350,6 +754,46 @@ namespace Byte.Toolkit.Crypto.IO
             byte[] data = BitConverter.GetBytes(value);
             await stream.WriteAsync(data, 0, SIZEOF_DOUBLE).ConfigureAwait(false);
         }
+
+        /// <summary>
+        /// Read double from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static double ReadDouble(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_DOUBLE];
+
+            if (stream.Read(buffer, 0, SIZEOF_DOUBLE) != SIZEOF_DOUBLE)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToDouble(buffer, 0);
+        }
+
+        /// <summary>
+        /// Asynchronously read double from stream
+        /// </summary>
+        /// <param name="stream">Input stream</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task<double> ReadDoubleAsync(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            byte[] buffer = new byte[SIZEOF_DOUBLE];
+
+            if (await stream.ReadAsync(buffer, 0, SIZEOF_DOUBLE).ConfigureAwait(false) != SIZEOF_DOUBLE)
+                throw new IOException("Incorrect number of bytes returned");
+
+            return BitConverter.ToDouble(buffer, 0);
+        }
+
+        #endregion
+
+        #region string
 
         /// <summary>
         /// Write string to stream
@@ -391,6 +835,10 @@ namespace Byte.Toolkit.Crypto.IO
             await stream.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
         }
 
+        #endregion
+
+        #region Length-Value
+
         /// <summary>
         /// Write a Length-Value
         /// </summary>
@@ -426,404 +874,6 @@ namespace Byte.Toolkit.Crypto.IO
         }
 
         /// <summary>
-        /// Read byte from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static byte ReadByte(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_BYTE];
-
-            if (stream.Read(buffer, 0, SIZEOF_BYTE) != SIZEOF_BYTE)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return buffer[0];
-        }
-
-        /// <summary>
-        /// Asynchronously read byte from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<byte> ReadByteAsync(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_BYTE];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_BYTE).ConfigureAwait(false) != SIZEOF_BYTE)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return buffer[0];
-        }
-
-        /// <summary>
-        /// Read bytes from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <param name="nbBytes">Number of bytes to read</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static byte[] ReadBytes(Stream stream, int nbBytes)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[nbBytes];
-
-            if (stream.Read(buffer, 0, nbBytes) != nbBytes)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return buffer;
-        }
-
-        /// <summary>
-        /// Asynchronously read bytes from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <param name="nbBytes">Number of bytes to read</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<byte[]> ReadBytesAsync(Stream stream, int nbBytes)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[nbBytes];
-
-            if (await stream.ReadAsync(buffer, 0, nbBytes).ConfigureAwait(false) != nbBytes)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return buffer;
-        }
-
-        /// <summary>
-        /// Read bool from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static bool ReadBool(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_BOOL];
-
-            if (stream.Read(buffer, 0, SIZEOF_BOOL) != SIZEOF_BOOL)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToBoolean(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read bool from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<bool> ReadBoolAsync(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_BOOL];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_BOOL).ConfigureAwait(false) != SIZEOF_BOOL)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToBoolean(buffer, 0);
-        }
-
-        /// <summary>
-        /// Read Int16 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static Int16 ReadInt16(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_INT16];
-
-            if (stream.Read(buffer, 0, SIZEOF_INT16) != SIZEOF_INT16)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToInt16(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read Int16 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<Int16> ReadInt16Async(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_INT16];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_INT16).ConfigureAwait(false) != SIZEOF_INT16)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToInt16(buffer, 0);
-        }
-
-        /// <summary>
-        /// Read UInt16 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static UInt16 ReadUInt16(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_UINT16];
-
-            if (stream.Read(buffer, 0, SIZEOF_UINT16) != SIZEOF_UINT16)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToUInt16(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read UInt16 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<UInt16> ReadUInt16Async(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_UINT16];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_UINT16).ConfigureAwait(false) != SIZEOF_UINT16)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToUInt16(buffer, 0);
-        }
-
-        /// <summary>
-        /// Read Int32 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static Int32 ReadInt32(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_INT32];
-
-            if (stream.Read(buffer, 0, SIZEOF_INT32) != SIZEOF_INT32)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToInt32(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read Int32 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<Int32> ReadInt32Async(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_INT32];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_INT32).ConfigureAwait(false) != SIZEOF_INT32)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToInt32(buffer, 0);
-        }
-
-        /// <summary>
-        /// Read UInt32 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static UInt32 ReadUInt32(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_UINT32];
-
-            if (stream.Read(buffer, 0, SIZEOF_UINT32) != SIZEOF_UINT32)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToUInt32(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read UInt32 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<UInt32> ReadUInt32Async(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_UINT32];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_UINT32).ConfigureAwait(false) != SIZEOF_UINT32)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToUInt32(buffer, 0);
-        }
-
-        /// <summary>
-        /// Read Int64 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static Int64 ReadInt64(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_INT64];
-
-            if (stream.Read(buffer, 0, SIZEOF_INT64) != SIZEOF_INT64)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToInt64(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read Int64 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<Int64> ReadInt64Async(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_INT64];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_INT64).ConfigureAwait(false) != SIZEOF_INT64)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToInt64(buffer, 0);
-        }
-
-        /// <summary>
-        /// Read UInt64 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static UInt64 ReadUInt64(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_UINT64];
-
-            if (stream.Read(buffer, 0, SIZEOF_UINT64) != SIZEOF_UINT64)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToUInt64(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read UInt64 from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<UInt64> ReadUInt64Async(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_UINT64];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_UINT64).ConfigureAwait(false) != SIZEOF_UINT64)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToUInt64(buffer, 0);
-        }
-
-        /// <summary>
-        /// Read float from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static float ReadFloat(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_FLOAT];
-
-            if (stream.Read(buffer, 0, SIZEOF_FLOAT) != SIZEOF_FLOAT)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToSingle(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read float from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<float> ReadFloatAsync(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_FLOAT];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_FLOAT).ConfigureAwait(false) != SIZEOF_FLOAT)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToSingle(buffer, 0);
-        }
-
-        /// <summary>
-        /// Read double from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static double ReadDouble(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_DOUBLE];
-
-            if (stream.Read(buffer, 0, SIZEOF_DOUBLE) != SIZEOF_DOUBLE)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToDouble(buffer, 0);
-        }
-
-        /// <summary>
-        /// Asynchronously read double from stream
-        /// </summary>
-        /// <param name="stream">Input stream</param>
-        /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<double> ReadDoubleAsync(Stream stream)
-        {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            byte[] buffer = new byte[SIZEOF_DOUBLE];
-
-            if (await stream.ReadAsync(buffer, 0, SIZEOF_DOUBLE).ConfigureAwait(false) != SIZEOF_DOUBLE)
-                throw new IOException("Incorrect number of bytes returned");
-
-            return BitConverter.ToDouble(buffer, 0);
-        }
-
-        /// <summary>
         /// Read a Length-Value
         /// </summary>
         /// <param name="stream">Input stream</param>
@@ -850,5 +900,7 @@ namespace Byte.Toolkit.Crypto.IO
             int valueLength = ReadInt32(stream);
             return await ReadBytesAsync(stream, valueLength).ConfigureAwait(false);
         }
+
+        #endregion
     }
 }
