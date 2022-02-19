@@ -41,7 +41,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.DecryptAsync(input, output, rsa);
+                    await ChaChaAesFileEnc.DecryptAsync(input, output, rsa).ConfigureAwait(false);
                     dec = output.ToArray();
                 }
             }
@@ -71,7 +71,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.DecryptAsync(input, output, "test1234");
+                    await ChaChaAesFileEnc.DecryptAsync(input, output, "test1234").ConfigureAwait(false);
                     dec = output.ToArray();
                 }
             }
@@ -113,7 +113,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await StreamHelper.WriteStreamAsync(input, output);
+                    await StreamHelper.WriteStreamAsync(input, output).ConfigureAwait(false);
                     data = output.ToArray();
                 }
             }
@@ -123,7 +123,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.DecryptAsync(input, output, rsa);
+                    await ChaChaAesFileEnc.DecryptAsync(input, output, rsa).ConfigureAwait(false);
                     dec = output.ToArray();
                 }
             }
@@ -163,7 +163,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await StreamHelper.WriteStreamAsync(input, output);
+                    await StreamHelper.WriteStreamAsync(input, output).ConfigureAwait(false);
                     data = output.ToArray();
                 }
             }
@@ -173,7 +173,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.DecryptAsync(input, output, "test1234");
+                    await ChaChaAesFileEnc.DecryptAsync(input, output, "test1234").ConfigureAwait(false);
                     dec = output.ToArray();
                 }
             }
@@ -218,7 +218,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.EncryptAsync(input, output, rsa, "keyname");
+                    await ChaChaAesFileEnc.EncryptAsync(input, output, rsa, "keyname").ConfigureAwait(false);
                     enc = output.ToArray();
                 }
             }
@@ -228,7 +228,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.DecryptAsync(input, output, rsa);
+                    await ChaChaAesFileEnc.DecryptAsync(input, output, rsa).ConfigureAwait(false);
                     dec = output.ToArray();
                 }
             }
@@ -272,7 +272,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.EncryptAsync(input, output, "blahblah1234");
+                    await ChaChaAesFileEnc.EncryptAsync(input, output, "blahblah1234").ConfigureAwait(false);
                     enc = output.ToArray();
                 }
             }
@@ -282,7 +282,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.DecryptAsync(input, output, "blahblah1234");
+                    await ChaChaAesFileEnc.DecryptAsync(input, output, "blahblah1234").ConfigureAwait(false);
                     dec = output.ToArray();
                 }
             }
@@ -380,7 +380,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.EncryptAsync(input, output, rsa, "keyname");
+                    await ChaChaAesFileEnc.EncryptAsync(input, output, rsa, "keyname").ConfigureAwait(false);
                     enc = output.ToArray();
                 }
             }
@@ -389,25 +389,25 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream ms = new MemoryStream(enc))
                 {
-                    byte[] header = await BinaryHelper.ReadBytesAsync(ms, 7);
+                    byte[] header = await BinaryHelper.ReadBytesAsync(ms, 7).ConfigureAwait(false);
                     Assert.AreEqual("CAENCR!", Encoding.ASCII.GetString(header));
 
-                    byte version = await BinaryHelper.ReadByteAsync(ms);
+                    byte version = await BinaryHelper.ReadByteAsync(ms).ConfigureAwait(false);
                     Assert.AreEqual(0x05, version);
 
-                    byte[] keyNameData = await BinaryHelper.ReadLVAsync(ms);
+                    byte[] keyNameData = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
                     Assert.AreEqual("keyname", Encoding.ASCII.GetString(keyNameData));
 
-                    byte[] encKeyData = await BinaryHelper.ReadLVAsync(ms);
+                    byte[] encKeyData = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
                     byte[] keyData = RSA.Decrypt(rsa, encKeyData);
 
                     byte[] chachaKey, chachaNonce, aesKey, aesIv;
                     using (MemoryStream msKeyData = new MemoryStream(keyData))
                     {
-                        chachaKey = await BinaryHelper.ReadLVAsync(msKeyData);
-                        chachaNonce = await BinaryHelper.ReadLVAsync(msKeyData);
-                        aesKey = await BinaryHelper.ReadLVAsync(msKeyData);
-                        aesIv = await BinaryHelper.ReadLVAsync(msKeyData);
+                        chachaKey = await BinaryHelper.ReadLVAsync(msKeyData).ConfigureAwait(false);
+                        chachaNonce = await BinaryHelper.ReadLVAsync(msKeyData).ConfigureAwait(false);
+                        aesKey = await BinaryHelper.ReadLVAsync(msKeyData).ConfigureAwait(false);
+                        aesIv = await BinaryHelper.ReadLVAsync(msKeyData).ConfigureAwait(false);
                     }
 
                     Assert.AreEqual(32, chachaKey.Length);
@@ -418,15 +418,15 @@ namespace CryptoToolkitUnitTests.FileEnc
                     byte[] enc;
                     using (MemoryStream msData = new MemoryStream())
                     {
-                        await StreamHelper.WriteStreamAsync(ms, msData);
+                        await StreamHelper.WriteStreamAsync(ms, msData).ConfigureAwait(false);
                         enc = msData.ToArray();
                     }
 
                     using (MemoryStream msData = new MemoryStream(enc))
                     {
-                        byte[] d1 = await BinaryHelper.ReadLVAsync(msData);
-                        byte[] d2 = await BinaryHelper.ReadLVAsync(msData);
-                        byte[] d0 = await BinaryHelper.ReadLVAsync(msData);
+                        byte[] d1 = await BinaryHelper.ReadLVAsync(msData).ConfigureAwait(false);
+                        byte[] d2 = await BinaryHelper.ReadLVAsync(msData).ConfigureAwait(false);
+                        byte[] d0 = await BinaryHelper.ReadLVAsync(msData).ConfigureAwait(false);
 
                         Assert.AreEqual(32, d1.Length);
                         Assert.AreEqual(32, d2.Length);
@@ -531,7 +531,7 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream output = new MemoryStream())
                 {
-                    await ChaChaAesFileEnc.EncryptAsync(input, output, "test1234abc");
+                    await ChaChaAesFileEnc.EncryptAsync(input, output, "test1234abc").ConfigureAwait(false);
                     enc = output.ToArray();
                 }
             }
@@ -540,16 +540,16 @@ namespace CryptoToolkitUnitTests.FileEnc
             {
                 using (MemoryStream ms = new MemoryStream(enc))
                 {
-                    byte[] header = await BinaryHelper.ReadBytesAsync(ms, 7);
+                    byte[] header = await BinaryHelper.ReadBytesAsync(ms, 7).ConfigureAwait(false);
                     Assert.AreEqual("CAENCP!", Encoding.ASCII.GetString(header));
 
-                    byte version = await BinaryHelper.ReadByteAsync(ms);
+                    byte version = await BinaryHelper.ReadByteAsync(ms).ConfigureAwait(false);
                     Assert.AreEqual(0x05, version);
 
-                    byte[] chachaSalt = await BinaryHelper.ReadLVAsync(ms);
-                    byte[] chachaNonce = await BinaryHelper.ReadLVAsync(ms);
-                    byte[] aesSalt = await BinaryHelper.ReadLVAsync(ms);
-                    byte[] aesIv = await BinaryHelper.ReadLVAsync(ms);
+                    byte[] chachaSalt = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+                    byte[] chachaNonce = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+                    byte[] aesSalt = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+                    byte[] aesIv = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
 
                     Assert.AreEqual(16, chachaSalt.Length);
                     Assert.AreEqual(12, chachaNonce.Length);
@@ -562,15 +562,15 @@ namespace CryptoToolkitUnitTests.FileEnc
                     byte[] enc;
                     using (MemoryStream msData = new MemoryStream())
                     {
-                        await StreamHelper.WriteStreamAsync(ms, msData);
+                        await StreamHelper.WriteStreamAsync(ms, msData).ConfigureAwait(false);
                         enc = msData.ToArray();
                     }
 
                     using (MemoryStream msData = new MemoryStream(enc))
                     {
-                        byte[] d1 = await BinaryHelper.ReadLVAsync(msData);
-                        byte[] d2 = await BinaryHelper.ReadLVAsync(msData);
-                        byte[] d0 = await BinaryHelper.ReadLVAsync(msData);
+                        byte[] d1 = await BinaryHelper.ReadLVAsync(msData).ConfigureAwait(false);
+                        byte[] d2 = await BinaryHelper.ReadLVAsync(msData).ConfigureAwait(false);
+                        byte[] d0 = await BinaryHelper.ReadLVAsync(msData).ConfigureAwait(false);
 
                         Assert.AreEqual(32, d1.Length);
                         Assert.AreEqual(32, d2.Length);
