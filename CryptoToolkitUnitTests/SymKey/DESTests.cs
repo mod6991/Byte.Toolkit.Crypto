@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Byte.Toolkit.Crypto.IO;
 using Byte.Toolkit.Crypto.Padding;
 using Byte.Toolkit.Crypto.SymKey;
@@ -42,6 +43,21 @@ namespace CryptoToolkitUnitTests.SymKey
         }
 
         [TestCaseSource(nameof(DataSource))]
+        public async Task EncryptCBCStreamAsync(Tuple<byte[], byte[], byte[], byte[]> values)
+        {
+            byte[] enc;
+            using (MemoryStream ms = new MemoryStream(values.Item3))
+            {
+                using (MemoryStream msEnc = new MemoryStream())
+                {
+                    await DES.EncryptCBCAsync(ms, msEnc, values.Item1, values.Item2, new NoPadding()).ConfigureAwait(false);
+                    enc = msEnc.ToArray();
+                }
+            }
+            Assert.AreEqual(values.Item4, enc);
+        }
+
+        [TestCaseSource(nameof(DataSource))]
         public void DecryptCBCStream(Tuple<byte[], byte[], byte[], byte[]> values)
         {
             byte[] dec;
@@ -50,6 +66,21 @@ namespace CryptoToolkitUnitTests.SymKey
                 using (MemoryStream msDec = new MemoryStream())
                 {
                     DES.DecryptCBC(ms, msDec, values.Item1, values.Item2, new NoPadding());
+                    dec = msDec.ToArray();
+                }
+            }
+            Assert.AreEqual(values.Item3, dec);
+        }
+
+        [TestCaseSource(nameof(DataSource))]
+        public async Task DecryptCBCStreamAsync(Tuple<byte[], byte[], byte[], byte[]> values)
+        {
+            byte[] dec;
+            using (MemoryStream ms = new MemoryStream(values.Item4))
+            {
+                using (MemoryStream msDec = new MemoryStream())
+                {
+                    await DES.DecryptCBCAsync(ms, msDec, values.Item1, values.Item2, new NoPadding()).ConfigureAwait(false);
                     dec = msDec.ToArray();
                 }
             }

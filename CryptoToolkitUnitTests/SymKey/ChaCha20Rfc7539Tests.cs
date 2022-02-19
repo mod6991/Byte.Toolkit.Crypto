@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Byte.Toolkit.Crypto.IO;
 using Byte.Toolkit.Crypto.Padding;
 using Byte.Toolkit.Crypto.SymKey;
@@ -42,6 +43,21 @@ namespace CryptoToolkitUnitTests.SymKey
         }
 
         [TestCaseSource(nameof(DataSource))]
+        public async Task EncryptStreamAsync(Tuple<byte[], byte[], byte[], byte[]> values)
+        {
+            byte[] enc;
+            using (MemoryStream ms = new MemoryStream(values.Item3))
+            {
+                using (MemoryStream msEnc = new MemoryStream())
+                {
+                    await ChaCha20Rfc7539.EncryptAsync(ms, msEnc, values.Item1, values.Item2).ConfigureAwait(false);
+                    enc = msEnc.ToArray();
+                }
+            }
+            Assert.AreEqual(values.Item4, enc);
+        }
+
+        [TestCaseSource(nameof(DataSource))]
         public void DecryptStream(Tuple<byte[], byte[], byte[], byte[]> values)
         {
             byte[] dec;
@@ -50,6 +66,21 @@ namespace CryptoToolkitUnitTests.SymKey
                 using (MemoryStream msDec = new MemoryStream())
                 {
                     ChaCha20Rfc7539.Decrypt(ms, msDec, values.Item1, values.Item2);
+                    dec = msDec.ToArray();
+                }
+            }
+            Assert.AreEqual(values.Item3, dec);
+        }
+
+        [TestCaseSource(nameof(DataSource))]
+        public async Task DecryptStreamAsync(Tuple<byte[], byte[], byte[], byte[]> values)
+        {
+            byte[] dec;
+            using (MemoryStream ms = new MemoryStream(values.Item4))
+            {
+                using (MemoryStream msDec = new MemoryStream())
+                {
+                    await ChaCha20Rfc7539.DecryptAsync(ms, msDec, values.Item1, values.Item2).ConfigureAwait(false);
                     dec = msDec.ToArray();
                 }
             }
