@@ -5,6 +5,7 @@ using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Byte.Toolkit.Crypto.SymKey
 {
@@ -86,6 +87,36 @@ namespace Byte.Toolkit.Crypto.SymKey
         }
 
         /// <summary>
+        /// Asynchronously encrypt stream with DES-CBC
+        /// </summary>
+        /// <param name="input">Input stream to encrypt</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="key">Key</param>
+        /// <param name="iv">IV</param>
+        /// <param name="padding">Padding</param>
+        /// <param name="notifyProgression">Notify progression method</param>
+        /// <param name="bufferSize">Buffer size</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptCBCAsync(Stream input, Stream output, byte[] key, byte[] iv, IDataPadding padding, Action<int> notifyProgression = null, int bufferSize = 4096)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (iv == null)
+                throw new ArgumentNullException(nameof(iv));
+            if (padding == null)
+                throw new ArgumentNullException(nameof(padding));
+
+            IBufferedCipher cipher = new BufferedBlockCipher(new CbcBlockCipher(new DesEngine()));
+            ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), iv, 0, iv.Length);
+            cipher.Init(true, parameters);
+            await SymKeyHelper.EncryptCBCAsync(input, output, cipher, BLOCK_SIZE, padding, notifyProgression, bufferSize).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Decrypt data with DES-CBC
         /// </summary>
         /// <param name="data">Data to decrypt</param>
@@ -140,6 +171,36 @@ namespace Byte.Toolkit.Crypto.SymKey
             ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), iv, 0, iv.Length);
             cipher.Init(false, parameters);
             SymKeyHelper.DecryptCBC(input, output, cipher, BLOCK_SIZE, padding, notifyProgression, bufferSize);
+        }
+
+        /// <summary>
+        /// Asynchronously decrypt stream with DES-CBC
+        /// </summary>
+        /// <param name="input">Input stream to decrypt</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="key">Key</param>
+        /// <param name="iv">IV</param>
+        /// <param name="padding">Padding</param>
+        /// <param name="notifyProgression">Notify progression method</param>
+        /// <param name="bufferSize">Buffer size</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptCBCAsync(Stream input, Stream output, byte[] key, byte[] iv, IDataPadding padding, Action<int> notifyProgression = null, int bufferSize = 4096)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (iv == null)
+                throw new ArgumentNullException(nameof(iv));
+            if (padding == null)
+                throw new ArgumentNullException(nameof(padding));
+
+            IBufferedCipher cipher = new BufferedBlockCipher(new CbcBlockCipher(new DesEngine()));
+            ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), iv, 0, iv.Length);
+            cipher.Init(false, parameters);
+            await SymKeyHelper.DecryptCBCAsync(input, output, cipher, BLOCK_SIZE, padding, notifyProgression, bufferSize).ConfigureAwait(false);
         }
     }
 }
