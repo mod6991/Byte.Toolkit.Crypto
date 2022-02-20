@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Byte.Toolkit.Crypto.FileEnc
 {
@@ -20,6 +21,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
         private const string RSA_HEADER = "AENCR!";
         private const string PASS_HEADER = "AENCP!";
         private const int SALT_SIZE = 16;
+
+        #region Encrypt with key
 
         /// <summary>
         /// Encrypt with AES-256 with a RSA key
@@ -63,6 +66,47 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously encrypt with AES-256 with a RSA key
+        /// </summary>
+        /// <param name="input">Input stream</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="rsa">RSA key</param>
+        /// <param name="keyName">Key name</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(Stream input, Stream output, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+            if (keyName == null)
+                throw new ArgumentNullException(nameof(keyName));
+
+            byte[] key = RandomHelper.GenerateBytes(AES.KEY_SIZE);
+            byte[] iv = RandomHelper.GenerateBytes(AES.IV_SIZE);
+
+            byte[] keyData;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                await BinaryHelper.WriteLVAsync(ms, key).ConfigureAwait(false);
+                await BinaryHelper.WriteLVAsync(ms, iv).ConfigureAwait(false);
+                keyData = ms.ToArray();
+            }
+
+            byte[] encKeyData = PubKey.RSA.Encrypt(rsa, keyData);
+
+            await BinaryHelper.WriteAsync(output, RSA_HEADER, Encoding.ASCII).ConfigureAwait(false);
+            await BinaryHelper.WriteAsync(output, VERSION).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, Encoding.ASCII.GetBytes(keyName)).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, encKeyData).ConfigureAwait(false);
+
+            await AES.EncryptCBCAsync(input, output, key, iv, new Pkcs7Padding(), notifyProgression, BUFFER_SIZE).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Encrypt file with AES-256 with a RSA key
         /// </summary>
         /// <param name="inputFile">Input file</param>
@@ -90,6 +134,39 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously encrypt file with AES-256 with a RSA key
+        /// </summary>
+        /// <param name="inputFile">Input file</param>
+        /// <param name="outputFile">Output file</param>
+        /// <param name="rsa">RSA key</param>
+        /// <param name="keyName">Key name</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(string inputFile, string outputFile, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+            if (keyName == null)
+                throw new ArgumentNullException(nameof(keyName));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    await EncryptAsync(fsIn, fsOut, rsa, keyName, notifyProgression).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Encrypt with password
 
         /// <summary>
         /// Encrypt with AES-256 with a password
@@ -121,6 +198,35 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously encrypt with AES-256 with a password
+        /// </summary>
+        /// <param name="input">Input file</param>
+        /// <param name="output">Output file</param>
+        /// <param name="password">Password</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(Stream input, Stream output, string password, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            byte[] salt = RandomHelper.GenerateBytes(SALT_SIZE);
+            byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt, 60000);
+            byte[] iv = RandomHelper.GenerateBytes(AES.IV_SIZE);
+
+            await BinaryHelper.WriteAsync(output, PASS_HEADER, Encoding.ASCII).ConfigureAwait(false);
+            await BinaryHelper.WriteAsync(output, VERSION).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, salt).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, iv).ConfigureAwait(false);
+
+            await AES.EncryptCBCAsync(input, output, key, iv, new Pkcs7Padding(), notifyProgression, BUFFER_SIZE).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Encrypt file with AES-256 with a password
         /// </summary>
         /// <param name="inputFile">Input file</param>
@@ -145,6 +251,36 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously encrypt file with AES-256 with a password
+        /// </summary>
+        /// <param name="inputFile">Input file</param>
+        /// <param name="outputFile">Output file</param>
+        /// <param name="password">Password</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(string inputFile, string outputFile, string password, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    await EncryptAsync(fsIn, fsOut, password, notifyProgression).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Decrypt with key
 
         /// <summary>
         /// Decrypt with AES-256 with a RSA key
@@ -185,6 +321,44 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously decrypt with AES-256 with a RSA key
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="rsa"></param>
+        /// <param name="notifyProgression"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(Stream input, Stream output, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+
+            input.Seek(RSA_HEADER.Length, SeekOrigin.Current); // Header
+            input.Seek(1, SeekOrigin.Current); // Version
+
+            byte[] keyNameData = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+            byte[] encKeyData = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+
+            if (notifyProgression != null)
+                notifyProgression(RSA_HEADER.Length + 1 + 2 * sizeof(int) + keyNameData.Length + encKeyData.Length);
+
+            byte[] keyData = PubKey.RSA.Decrypt(rsa, encKeyData);
+
+            byte[] key, iv;
+            using (MemoryStream ms = new MemoryStream(keyData))
+            {
+                key = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+                iv = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+            }
+
+            await AES.DecryptCBCAsync(input, output, key, iv, new Pkcs7Padding(), notifyProgression, BUFFER_SIZE).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Decrypt file with AES-256 with a RSA key
         /// </summary>
         /// <param name="inputFile">Input file</param>
@@ -209,6 +383,36 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously decrypt file with AES-256 with a RSA key
+        /// </summary>
+        /// <param name="inputFile">Input file</param>
+        /// <param name="outputFile">Output file</param>
+        /// <param name="rsa">RSA key</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(string inputFile, string outputFile, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    await DecryptAsync(fsIn, fsOut, rsa, notifyProgression).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Decrypt with password
 
         /// <summary>
         /// Decrypt with AES-256 with a password
@@ -242,6 +446,37 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously decrypt with AES-256 with a password
+        /// </summary>
+        /// <param name="input">Input stream</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="password">Password</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(Stream input, Stream output, string password, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            input.Seek(PASS_HEADER.Length, SeekOrigin.Current); // Header
+            input.Seek(1, SeekOrigin.Current); // Version
+
+            byte[] salt = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+            byte[] iv = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+
+            if (notifyProgression != null)
+                notifyProgression(PASS_HEADER.Length + 1 + 2 * sizeof(int) + salt.Length + iv.Length);
+
+            byte[] key = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, salt, 60000);
+
+            await AES.DecryptCBCAsync(input, output, key, iv, new Pkcs7Padding(), notifyProgression).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Decrypt file with AES-256 with a password
         /// </summary>
         /// <param name="inputFile">Input file</param>
@@ -266,5 +501,33 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously decrypt file with AES-256 with a password
+        /// </summary>
+        /// <param name="inputFile">Input file</param>
+        /// <param name="outputFile">Output file</param>
+        /// <param name="password">Password</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(string inputFile, string outputFile, string password, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    await DecryptAsync(fsIn, fsOut, password, notifyProgression).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
     }
 }

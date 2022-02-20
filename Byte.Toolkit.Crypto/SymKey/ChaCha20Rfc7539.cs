@@ -3,6 +3,7 @@ using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Byte.Toolkit.Crypto.SymKey
 {
@@ -92,6 +93,49 @@ namespace Byte.Toolkit.Crypto.SymKey
         }
 
         /// <summary>
+        /// Asynchronously encrypt data with ChaCha20 RFC 7539
+        /// </summary>
+        /// <param name="input">Input stream to encrypt</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="key">Key</param>
+        /// <param name="nonce">Nonce</param>
+        /// <param name="notifyProgression">Notify progression method</param>
+        /// <param name="bufferSize">Buffer size</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(Stream input, Stream output, byte[] key, byte[] nonce, Action<int> notifyProgression = null, int bufferSize = 4096)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (nonce == null)
+                throw new ArgumentNullException(nameof(nonce));
+
+            ChaCha7539Engine engine = new ChaCha7539Engine();
+            ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
+            engine.Init(true, parameters);
+
+            int bytesRead;
+            byte[] buffer = new byte[bufferSize];
+            byte[] enc = new byte[bufferSize];
+            do
+            {
+                bytesRead = await input.ReadAsync(buffer, 0, bufferSize).ConfigureAwait(false);
+                if (bytesRead > 0)
+                {
+                    engine.ProcessBytes(buffer, 0, bytesRead, enc, 0);
+                    await output.WriteAsync(enc, 0, bytesRead).ConfigureAwait(false);
+
+                    if (notifyProgression != null)
+                        notifyProgression(bytesRead);
+                }
+
+            } while (bytesRead == bufferSize);
+        }
+
+        /// <summary>
         /// Decrypt data with ChaCha20 RFC 7539
         /// </summary>
         /// <param name="data">Data to decrypt</param>
@@ -153,6 +197,49 @@ namespace Byte.Toolkit.Crypto.SymKey
                 {
                     engine.ProcessBytes(buffer, 0, bytesRead, dec, 0);
                     output.Write(dec, 0, bytesRead);
+
+                    if (notifyProgression != null)
+                        notifyProgression(bytesRead);
+                }
+
+            } while (bytesRead == bufferSize);
+        }
+
+        /// <summary>
+        /// Asynchronously decrypt data with ChaCha20 RFC 7539
+        /// </summary>
+        /// <param name="input">Input stream to decrypt</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="key">Key</param>
+        /// <param name="nonce">Nonce</param>
+        /// <param name="notifyProgression">Notify progression method</param>
+        /// <param name="bufferSize">Buffer size</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(Stream input, Stream output, byte[] key, byte[] nonce, Action<int> notifyProgression = null, int bufferSize = 4096)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (nonce == null)
+                throw new ArgumentNullException(nameof(nonce));
+
+            ChaCha7539Engine engine = new ChaCha7539Engine();
+            ICipherParameters parameters = new ParametersWithIV(new KeyParameter(key, 0, key.Length), nonce, 0, nonce.Length);
+            engine.Init(false, parameters);
+
+            int bytesRead;
+            byte[] buffer = new byte[bufferSize];
+            byte[] dec = new byte[bufferSize];
+            do
+            {
+                bytesRead = await input.ReadAsync(buffer, 0, bufferSize).ConfigureAwait(false);
+                if (bytesRead > 0)
+                {
+                    engine.ProcessBytes(buffer, 0, bytesRead, dec, 0);
+                    await output.WriteAsync(dec, 0, bytesRead).ConfigureAwait(false);
 
                     if (notifyProgression != null)
                         notifyProgression(bytesRead);

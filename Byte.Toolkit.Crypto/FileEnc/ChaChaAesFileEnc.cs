@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Byte.Toolkit.Crypto.FileEnc
 {
@@ -20,6 +21,8 @@ namespace Byte.Toolkit.Crypto.FileEnc
         private const string RSA_HEADER = "CAENCR!";
         private const string PASS_HEADER = "CAENCP!";
         private const int SALT_SIZE = 16;
+
+        #region Encrypt with key
 
         /// <summary>
         /// Encrypt with ChaCha20 and AES-256 with a RSA key
@@ -67,6 +70,51 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously encrypt with ChaCha20 and AES-256 with a RSA key
+        /// </summary>
+        /// <param name="input">Input Stream</param>
+        /// <param name="output">Output Stream</param>
+        /// <param name="rsa">RSA key</param>
+        /// <param name="keyName">Key name</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(Stream input, Stream output, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+            if (keyName == null)
+                throw new ArgumentNullException(nameof(keyName));
+
+            byte[] chachaKey = RandomHelper.GenerateBytes(ChaCha20Rfc7539.KEY_SIZE);
+            byte[] chachaNonce = RandomHelper.GenerateBytes(ChaCha20Rfc7539.NONCE_SIZE);
+            byte[] aesKey = RandomHelper.GenerateBytes(AES.KEY_SIZE);
+            byte[] aesIv = RandomHelper.GenerateBytes(AES.IV_SIZE);
+
+            byte[] keysData;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                await BinaryHelper.WriteLVAsync(ms, chachaKey).ConfigureAwait(false);
+                await BinaryHelper.WriteLVAsync(ms, chachaNonce).ConfigureAwait(false);
+                await BinaryHelper.WriteLVAsync(ms, aesKey).ConfigureAwait(false);
+                await BinaryHelper.WriteLVAsync(ms, aesIv).ConfigureAwait(false);
+                keysData = ms.ToArray();
+            }
+
+            byte[] encKeysData = PubKey.RSA.Encrypt(rsa, keysData);
+
+            await BinaryHelper.WriteAsync(output, RSA_HEADER, Encoding.ASCII).ConfigureAwait(false);
+            await BinaryHelper.WriteAsync(output, VERSION).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, Encoding.ASCII.GetBytes(keyName)).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, encKeysData).ConfigureAwait(false);
+
+            await SymEncryptAndPadAsync(input, output, chachaKey, chachaNonce, aesKey, aesIv, notifyProgression).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Encrypt file with ChaCha20 and AES-256 with a RSA key
         /// </summary>
         /// <param name="inputFile">Input file</param>
@@ -94,6 +142,39 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously encrypt file with ChaCha20 and AES-256 with a RSA key
+        /// </summary>
+        /// <param name="inputFile">Input file</param>
+        /// <param name="outputFile">Output file</param>
+        /// <param name="rsa">RSA key</param>
+        /// <param name="keyName">Key name</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(string inputFile, string outputFile, RSACryptoServiceProvider rsa, string keyName, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+            if (keyName == null)
+                throw new ArgumentNullException(nameof(keyName));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    await EncryptAsync(fsIn, fsOut, rsa, keyName, notifyProgression).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Encrypt with password
 
         /// <summary>
         /// Encrypt with ChaCha20 and AES-256 with a password
@@ -131,6 +212,41 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously encrypt with ChaCha20 and AES-256 with a password
+        /// </summary>
+        /// <param name="input">Input stream</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="password">Passw0rd</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(Stream input, Stream output, string password, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            byte[] chachaSalt = RandomHelper.GenerateBytes(SALT_SIZE);
+            byte[] chachaKey = PBKDF2.GenerateKeyFromPassword(ChaCha20Rfc7539.KEY_SIZE, password, chachaSalt, 60000);
+            byte[] chachaNonce = RandomHelper.GenerateBytes(ChaCha20Rfc7539.NONCE_SIZE);
+
+            byte[] aesSalt = RandomHelper.GenerateBytes(SALT_SIZE);
+            byte[] aesKey = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, aesSalt, 60000);
+            byte[] aesIv = RandomHelper.GenerateBytes(AES.IV_SIZE);
+
+            await BinaryHelper.WriteAsync(output, PASS_HEADER, Encoding.ASCII).ConfigureAwait(false);
+            await BinaryHelper.WriteAsync(output, VERSION).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, chachaSalt).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, chachaNonce).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, aesSalt).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, aesIv).ConfigureAwait(false);
+
+            await SymEncryptAndPadAsync(input, output, chachaKey, chachaNonce, aesKey, aesIv, notifyProgression).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Encrypt file with ChaCha20 and AES-256 with a password
         /// </summary>
         /// <param name="inputFile">Input file</param>
@@ -155,6 +271,36 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously encrypt file with ChaCha20 and AES-256 with a password
+        /// </summary>
+        /// <param name="inputFile">Input file</param>
+        /// <param name="outputFile">Output file</param>
+        /// <param name="password">Password</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task EncryptAsync(string inputFile, string outputFile, string password, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    await EncryptAsync(fsIn, fsOut, password, notifyProgression).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Decrypt with key
 
         /// <summary>
         /// Decrypt with ChaCha20 and AES-256 with a RSA key
@@ -197,6 +343,46 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously decrypt with ChaCha20 and AES-256 with a RSA key
+        /// </summary>
+        /// <param name="input">Input stream</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="rsa">RSA key</param>
+        /// <param name="notifyProgression">Notify progression delgate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(Stream input, Stream output, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+
+            input.Seek(RSA_HEADER.Length, SeekOrigin.Current); // Header
+            input.Seek(1, SeekOrigin.Current); // Version
+
+            byte[] keyNameData = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+            byte[] encKeysData = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+
+            if (notifyProgression != null)
+                notifyProgression(RSA_HEADER.Length + 1 + 2 * sizeof(int) + keyNameData.Length + encKeysData.Length);
+
+            byte[] keysData = PubKey.RSA.Decrypt(rsa, encKeysData);
+
+            byte[] chachaKey, chachaNonce, aesKey, aesIv;
+            using (MemoryStream ms = new MemoryStream(keysData))
+            {
+                chachaKey = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+                chachaNonce = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+                aesKey = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+                aesIv = await BinaryHelper.ReadLVAsync(ms).ConfigureAwait(false);
+            }
+
+            await SymDecryptAndUnpadAsync(input, output, chachaKey, chachaNonce, aesKey, aesIv, notifyProgression).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Decrypt file with ChaCha20 and AES-256 with a RSA key
         /// </summary>
         /// <param name="inputFile">Input file</param>
@@ -221,6 +407,36 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously decrypt file with ChaCha20 and AES-256 with a RSA key
+        /// </summary>
+        /// <param name="inputFile">Input file</param>
+        /// <param name="outputFile">Output file</param>
+        /// <param name="rsa">RSA key</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(string inputFile, string outputFile, RSACryptoServiceProvider rsa, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (rsa == null)
+                throw new ArgumentNullException(nameof(rsa));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    await DecryptAsync(fsIn, fsOut, rsa, notifyProgression).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Decrypt with password
 
         /// <summary>
         /// Decrypt with ChaCha20 and AES-256 with a password
@@ -257,6 +473,40 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously decrypt with ChaCha20 and AES-256 with a password
+        /// </summary>
+        /// <param name="input">Input stream</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="password">Password</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(Stream input, Stream output, string password, Action<int> notifyProgression = null)
+        {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            input.Seek(PASS_HEADER.Length, SeekOrigin.Current); // Header
+            input.Seek(1, SeekOrigin.Current); // Version
+
+            byte[] chachaSalt = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+            byte[] chachaNonce = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+            byte[] aesSalt = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+            byte[] aesIv = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+
+            if (notifyProgression != null)
+                notifyProgression(PASS_HEADER.Length + 1 + 4 * sizeof(int) + chachaSalt.Length + chachaNonce.Length + aesSalt.Length + aesIv.Length);
+
+            byte[] chachaKey = PBKDF2.GenerateKeyFromPassword(ChaCha20Rfc7539.KEY_SIZE, password, chachaSalt, 60000);
+            byte[] aesKey = PBKDF2.GenerateKeyFromPassword(AES.KEY_SIZE, password, aesSalt, 60000);
+
+            await SymDecryptAndUnpadAsync(input, output, chachaKey, chachaNonce, aesKey, aesIv, notifyProgression).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Decrypt file with ChaCha20 and AES-256 with a password
         /// </summary>
         /// <param name="inputFile">Input file</param>
@@ -281,6 +531,36 @@ namespace Byte.Toolkit.Crypto.FileEnc
                 }
             }
         }
+
+        /// <summary>
+        /// Asynchronously decrypt file with ChaCha20 and AES-256 with a password
+        /// </summary>
+        /// <param name="inputFile">Input file</param>
+        /// <param name="outputFile">Output file</param>
+        /// <param name="password">Password</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public static async Task DecryptAsync(string inputFile, string outputFile, string password, Action<int> notifyProgression = null)
+        {
+            if (inputFile == null)
+                throw new ArgumentNullException(nameof(inputFile));
+            if (outputFile == null)
+                throw new ArgumentNullException(nameof(outputFile));
+            if (password == null)
+                throw new ArgumentNullException(nameof(password));
+
+            using (FileStream fsIn = StreamHelper.GetFileStreamOpen(inputFile))
+            {
+                using (FileStream fsOut = StreamHelper.GetFileStreamCreate(outputFile))
+                {
+                    await DecryptAsync(fsIn, fsOut, password, notifyProgression).ConfigureAwait(false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Encrypt/Decrypt and Pad/Unpad
 
         /// <summary>
         /// Encrypt with ChaCha20 and AES and pad data with Pkcs7
@@ -334,6 +614,57 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously encrypt with ChaCha20 and AES and pad data with Pkcs7
+        /// </summary>
+        /// <param name="input">Input stream</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="chachaKey">ChaCha20 key</param>
+        /// <param name="chachaNonce">ChaCha20 nonce</param>
+        /// <param name="aesKey">AES key</param>
+        /// <param name="aesIv">AES Iv</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        private static async Task SymEncryptAndPadAsync(Stream input, Stream output, byte[] chachaKey, byte[] chachaNonce, byte[] aesKey, byte[] aesIv, Action<int> notifyProgression = null)
+        {
+            IDataPadding padding = new Pkcs7Padding();
+
+            bool padDone = false;
+            int bytesRead;
+            byte[] buffer = new byte[BUFFER_SIZE];
+
+            do
+            {
+                bytesRead = await input.ReadAsync(buffer, 0, BUFFER_SIZE).ConfigureAwait(false);
+
+                if (bytesRead == BUFFER_SIZE)
+                {
+                    await GenPadXorEncryptAndWriteAsync(output, bytesRead, buffer, chachaKey, chachaNonce, aesKey, aesIv).ConfigureAwait(false);
+                }
+                else if (bytesRead > 0)
+                {
+                    byte[] smallBuffer = new byte[bytesRead];
+                    Array.Copy(buffer, 0, smallBuffer, 0, bytesRead);
+                    byte[] padData = padding.Pad(smallBuffer, AES.BLOCK_SIZE);
+                    padDone = true;
+
+                    await GenPadXorEncryptAndWriteAsync(output, padData.Length, padData, chachaKey, chachaNonce, aesKey, aesIv).ConfigureAwait(false);
+                }
+
+                if (notifyProgression != null)
+                    notifyProgression(bytesRead);
+            } while (bytesRead == BUFFER_SIZE);
+
+            if (!padDone)
+            {
+                buffer = new byte[0];
+                byte[] padData = padding.Pad(buffer, AES.BLOCK_SIZE);
+
+                await GenPadXorEncryptAndWriteAsync(output, padData.Length, padData, chachaKey, chachaNonce, aesKey, aesIv).ConfigureAwait(false);
+            }
+
+            await BinaryHelper.WriteLVAsync(output, new byte[0]).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Decrypt with ChaCha20 and AES and unpad data with Pkcs7
         /// </summary>
         /// <param name="input">Input stream</param>
@@ -382,6 +713,58 @@ namespace Byte.Toolkit.Crypto.FileEnc
         }
 
         /// <summary>
+        /// Asynchronously decrypt with ChaCha20 and AES and unpad data with Pkcs7
+        /// </summary>
+        /// <param name="input">Input stream</param>
+        /// <param name="output">Output stream</param>
+        /// <param name="chachaKey">ChaCha20 key</param>
+        /// <param name="chachaNonce">ChaCha20 nonce</param>
+        /// <param name="aesKey">AES key</param>
+        /// <param name="aesIv">AES Iv</param>
+        /// <param name="notifyProgression">Notify progression delegate</param>
+        private static async Task SymDecryptAndUnpadAsync(Stream input, Stream output, byte[] chachaKey, byte[] chachaNonce, byte[] aesKey, byte[] aesIv, Action<int> notifyProgression = null)
+        {
+            IDataPadding padding = new Pkcs7Padding();
+
+            byte[] d1, d2;
+            byte[] backup = null;
+
+            do
+            {
+                d1 = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+                if (d1.Length > 0)
+                {
+                    if (backup != null)
+                        await output.WriteAsync(backup, 0, backup.Length).ConfigureAwait(false);
+
+                    byte[] rpad = ChaCha20Rfc7539.Decrypt(d1, chachaKey, chachaNonce);
+                    d2 = await BinaryHelper.ReadLVAsync(input).ConfigureAwait(false);
+                    byte[] xor = AES.DecryptCBC(d2, aesKey, aesIv);
+
+                    if (notifyProgression != null)
+                        notifyProgression(2 * sizeof(int) + d1.Length + d2.Length);
+
+                    byte[] data = new byte[rpad.Length];
+                    for (int i = 0; i < rpad.Length; i++)
+                        data[i] = (byte)(rpad[i] ^ xor[i]);
+
+                    backup = new byte[data.Length];
+                    Array.Copy(data, 0, backup, 0, data.Length);
+                }
+                else
+                {
+                    byte[] unpadData = padding.Unpad(backup, AES.BLOCK_SIZE);
+                    await output.WriteAsync(unpadData, 0, unpadData.Length).ConfigureAwait(false);
+                }
+
+            } while (d1.Length > 0);
+        }
+
+        #endregion
+
+        #region Double encryption pad XOR
+
+        /// <summary>
         /// Generate a random pad, XOR data with pad, encrypt pad with ChaCha20 and encrypt XOR result with AES-256
         /// </summary>
         /// <param name="output">Output stream</param>
@@ -405,5 +788,32 @@ namespace Byte.Toolkit.Crypto.FileEnc
             BinaryHelper.WriteLV(output, d1);
             BinaryHelper.WriteLV(output, d2);
         }
+
+        /// <summary>
+        /// Asynchronously generate a random pad, XOR data with pad, encrypt pad with ChaCha20 and encrypt XOR result with AES-256
+        /// </summary>
+        /// <param name="output">Output stream</param>
+        /// <param name="padSize">Pad size</param>
+        /// <param name="data">Data to XOR with pad</param>
+        /// <param name="chachaKey">ChaCha20 key</param>
+        /// <param name="chachaNonce">ChaCha20 nonce</param>
+        /// <param name="aesKey">AES key</param>
+        /// <param name="aesIv">AES Iv</param>
+        private static async Task GenPadXorEncryptAndWriteAsync(Stream output, int padSize, byte[] data, byte[] chachaKey, byte[] chachaNonce, byte[] aesKey, byte[] aesIv)
+        {
+            byte[] rpad = RandomHelper.GenerateBytes(padSize);
+            byte[] xor = new byte[padSize];
+
+            for (int i = 0; i < padSize; i++)
+                xor[i] = (byte)(data[i] ^ rpad[i]);
+
+            byte[] d1 = ChaCha20Rfc7539.Encrypt(rpad, chachaKey, chachaNonce);
+            byte[] d2 = AES.EncryptCBC(xor, aesKey, aesIv);
+
+            await BinaryHelper.WriteLVAsync(output, d1).ConfigureAwait(false);
+            await BinaryHelper.WriteLVAsync(output, d2).ConfigureAwait(false);
+        }
+
+        #endregion
     }
 }

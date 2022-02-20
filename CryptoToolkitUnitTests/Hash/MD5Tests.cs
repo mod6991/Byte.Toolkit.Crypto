@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Byte.Toolkit.Crypto.Hash;
 using Byte.Toolkit.Crypto.IO;
 using NUnit.Framework;
@@ -33,6 +34,18 @@ namespace CryptoToolkitUnitTests.Hash
             using(FileStream fs = StreamHelper.GetFileStreamOpen(@"data\Hash\md5.dat"))
             {
                 hash = MD5.Hash(fs);
+            }
+            Assert.AreEqual(hashStr, Hex.Encode(hash));
+        }
+
+        [Test]
+        public async Task HashStreamAsync()
+        {
+            string hashStr = await File.ReadAllTextAsync(@"data\Hash\md5.dat.txt", Encoding.ASCII).ConfigureAwait(false);
+            byte[] hash;
+            using(FileStream fs = StreamHelper.GetFileStreamOpen(@"data\Hash\md5.dat"))
+            {
+                hash = await MD5.HashAsync(fs).ConfigureAwait(false);
             }
             Assert.AreEqual(hashStr, Hex.Encode(hash));
         }
